@@ -36,6 +36,8 @@ public class GameController : MonoBehaviour {
 		FixedDeltaTimeStart = Time.fixedDeltaTime;
 		SetTimeScale(1f);
 		Instance = this;
+
+		Debug.Log("SteeringInit:" + LogitechGSDK.LogiSteeringInitialize(false));
 	}
 
 	private void Update () {

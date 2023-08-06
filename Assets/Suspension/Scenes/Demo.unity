@@ -5814,7 +5814,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   Cars:
-  - {fileID: 2075814193}
   - {fileID: 540632226}
   CameraController: {fileID: 1036258012}
   InteractionStand: {fileID: 779611456}
@@ -6987,7 +6986,6 @@ GameObject:
   - component: {fileID: 738027106}
   - component: {fileID: 738027104}
   - component: {fileID: 738027103}
-  - component: {fileID: 738027107}
   m_Layer: 0
   m_Name: Main Camera
   m_TagString: MainCamera
@@ -7069,18 +7067,6 @@ Camera:
   m_OcclusionCulling: 1
   m_StereoConvergence: 10
   m_StereoSeparation: 0.022
---- !u!114 &738027107
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 738027101}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 3047a8618a80261439a21993d26653a8, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!1 &752684070
 GameObject:
   m_ObjectHideFlags: 0
@@ -18617,17 +18603,6 @@ Transform:
   m_CorrespondingSourceObject: {fileID: 4822496462136992, guid: b616a3b1170b57d44a37b96489006a61, type: 3}
   m_PrefabInstance: {fileID: 2101492542}
   m_PrefabAsset: {fileID: 0}
---- !u!114 &2075814193 stripped
-MonoBehaviour:
-  m_CorrespondingSourceObject: {fileID: 114895170277852506, guid: e63b0b62870d3ba4aa68aa9ee5e3dffd, type: 3}
-  m_PrefabInstance: {fileID: 156585863}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: fc5d3d9130c20d84b8e4e9f18f332cd0, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!1001 &2076030144
 PrefabInstance:
   m_ObjectHideFlags: 0

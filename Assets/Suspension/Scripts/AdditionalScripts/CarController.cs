@@ -91,25 +91,26 @@ public class CarController : MonoBehaviour {
 		}
 		else
         {
-			print("No está conectado el volante");
-        }
+			float targetAcceleration = Input.GetAxis("Vertical");
+			float targetSteer = Input.GetAxis("Horizontal");
+
+			if (Input.GetButton("Jump") || !Enable)
+			{
+				CurrentAcceleration = 0;
+				CurrentBrake = Mathf.MoveTowards(CurrentBrake, 1, AccelerationBrakeTorque * Time.deltaTime);
+			}
+			else
+			{
+				CurrentAcceleration = Mathf.MoveTowards(CurrentAcceleration, targetAcceleration, AccelerationTorque * Time.deltaTime);
+				CurrentBrake = 0;
+			}
+
+			if (Enable)
+			{
+				CurrentSteer = Mathf.MoveTowards(CurrentSteer, targetSteer, AccelerationSteer * Time.deltaTime);
+			}
+		}
 		 
-		/*
-		float targetAcceleration = Input.GetAxis("Vertical");
-		float targetSteer = Input.GetAxis("Horizontal");
-
-		if (Input.GetButton("Jump") || !Enable) {
-			CurrentAcceleration = 0;
-			CurrentBrake = Mathf.MoveTowards(CurrentBrake, 1, AccelerationBrakeTorque * Time.deltaTime);
-		} else {
-			CurrentAcceleration = Mathf.MoveTowards(CurrentAcceleration, targetAcceleration, AccelerationTorque * Time.deltaTime);
-			CurrentBrake = 0;
-		}
-
-		if (Enable) {
-			CurrentSteer = Mathf.MoveTowards(CurrentSteer, targetSteer, AccelerationSteer * Time.deltaTime);
-		}
-		*/
 	}
 
 	private void FixedUpdate () {
