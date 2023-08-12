@@ -77,6 +77,9 @@ public class SetRotationByRPM: MonoBehaviour {
 					return oldRotate;
 				};
 				break;
+			default:
+				print("El milton se la come");
+				break;
 		}
 	}
 

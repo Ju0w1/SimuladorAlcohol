@@ -19,7 +19,7 @@ public class CarController : MonoBehaviour {
 
 	Rigidbody RB;
 	HashSet<WheelPreset> AllWheels = new HashSet<WheelPreset>();
-	float CurrentAcceleration;
+	public float CurrentAcceleration;
 	float CurrentBrake;
 	float CurrentSteer;
 
@@ -30,6 +30,9 @@ public class CarController : MonoBehaviour {
 	public float volante, acelerador, freno, embriague;
 
 	public int cambioActual;
+
+	public bool activar = false;
+	public bool activar2 = false;
 
 	private void Awake () {
 		Enable = false;
@@ -47,19 +50,19 @@ public class CarController : MonoBehaviour {
 
 	private void Update () {
 
-		if(LogitechGSDK.LogiUpdate() && LogitechGSDK.LogiIsConnected(0))
-        {
+		if (LogitechGSDK.LogiUpdate() && LogitechGSDK.LogiIsConnected(0))
+		{
 			LogitechGSDK.DIJOYSTATE2ENGINES rec;
 			rec = LogitechGSDK.LogiGetStateUnity(0);
 
 			volante = rec.lX / 32768f;
 
 			if (rec.lY > 0)
-            {
+			{
 				acelerador = 0;
 			}
 			else if (rec.lY < 0)
-            {
+			{
 				acelerador = rec.lY / -32768f;
 			}
 
@@ -72,15 +75,52 @@ public class CarController : MonoBehaviour {
 				freno = rec.lRz / -32768f;
 			}
 
+			if (rec.rglSlider[0] > 0)
+			{
+				embriague = 0;
+			}
+			else if (rec.rglSlider[0] < 0)
+			{
+				embriague = rec.rglSlider[0] / -32768f;
+			}
 
-			if (freno > 0 || !Enable)
+
+
+			if (embriague > 0.5f)
+			{
+				if (rec.rgbButtons[4] == 128 && !activar)
+				{
+					activar = true;
+				}
+
+				if (activar && rec.rgbButtons[4] == 0)
+				{
+					cambioActual = Mathf.Min(cambioActual + 1, 6);
+					activar = false;
+				}
+
+				if (rec.rgbButtons[5] == 128 && !activar2)
+				{
+					activar2 = true;
+				}
+
+				if (rec.rgbButtons[5] == 0 && activar2)
+				{
+					cambioActual = Mathf.Max(cambioActual - 1, -1);
+					activar2 = false;
+				}
+				
+			}
+
+
+			if (freno > 0 || !Enable || embriague > 0.5f)
 			{
 				CurrentAcceleration = 0;
 				CurrentBrake = Mathf.MoveTowards(CurrentBrake, 1, AccelerationBrakeTorque * Time.deltaTime);
 			}
 			else
 			{
-				CurrentAcceleration = Mathf.MoveTowards(CurrentAcceleration, acelerador, AccelerationTorque * Time.deltaTime);
+				CurrentAcceleration = Mathf.MoveTowards(CurrentAcceleration, acelerador * cambioActual, AccelerationTorque * Time.deltaTime);
 				CurrentBrake = 0;
 			}
 

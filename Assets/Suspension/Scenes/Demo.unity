@@ -6934,6 +6934,18 @@ PrefabInstance:
       propertyPath: m_LocalRotation.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 114191029791112826, guid: a47e79fe47d3af74192ebb2a8952f837, type: 3}
+      propertyPath: Invertion
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 114868046857288630, guid: a47e79fe47d3af74192ebb2a8952f837, type: 3}
+      propertyPath: cambioActual
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 114868046857288630, guid: a47e79fe47d3af74192ebb2a8952f837, type: 3}
+      propertyPath: CurrentAcceleration
+      value: 0
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: a47e79fe47d3af74192ebb2a8952f837, type: 3}
 --- !u!1 &722432364
@@ -6986,6 +6998,7 @@ GameObject:
   - component: {fileID: 738027106}
   - component: {fileID: 738027104}
   - component: {fileID: 738027103}
+  - component: {fileID: 738027107}
   m_Layer: 0
   m_Name: Main Camera
   m_TagString: MainCamera
@@ -7067,6 +7080,18 @@ Camera:
   m_OcclusionCulling: 1
   m_StereoConvergence: 10
   m_StereoSeparation: 0.022
+--- !u!114 &738027107
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 738027101}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3047a8618a80261439a21993d26653a8, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &752684070
 GameObject:
   m_ObjectHideFlags: 0
