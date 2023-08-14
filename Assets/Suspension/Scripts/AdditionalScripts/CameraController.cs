@@ -5,7 +5,7 @@ using UnityEngine;
 public class CameraController : MonoBehaviour {
 
 	[SerializeField] float MoveSpeed = 25f;
-	[SerializeField] float RotateSpeed = 0.2f;
+	//[SerializeField] float RotateSpeed = 0.2f;
 	[SerializeField] float ZoomSpeed = 10f;
 
 	Vector2 MousePos;

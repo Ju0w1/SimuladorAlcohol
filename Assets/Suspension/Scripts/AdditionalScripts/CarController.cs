@@ -102,7 +102,8 @@ public class CarController : MonoBehaviour {
 			else
 			{
 				CurrentAcceleration = Mathf.MoveTowards(CurrentAcceleration, targetAcceleration, AccelerationTorque * Time.deltaTime);
-				CurrentBrake = 0;
+				//CurrentAcceleration = targetAcceleration;
+                CurrentBrake = 0;
 			}
 
 			if (Enable)
@@ -116,7 +117,9 @@ public class CarController : MonoBehaviour {
 	private void FixedUpdate () {
 		WheelCollider wheelCollider;
 		for (int i = 0; i < DrivingWheels.Count; i++) {
-			wheelCollider = DrivingWheels[i].WheelCollider;
+            Debug.Log("hola!" + CurrentAcceleration * MaxMotorTorque);
+
+            wheelCollider = DrivingWheels[i].WheelCollider;
 			wheelCollider.motorTorque = CurrentAcceleration * MaxMotorTorque;
 			wheelCollider.brakeTorque = DrivingWheels[i].BrakeTorque * CurrentBrake * MaxBrakeTorque;
 		}
