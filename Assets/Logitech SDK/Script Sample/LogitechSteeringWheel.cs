@@ -336,11 +336,12 @@ public class LogitechSteeringWheel : MonoBehaviour
         else if (!LogitechGSDK.LogiIsConnected(0))
         {
             //actualState = "PLEASE PLUG IN A STEERING WHEEL OR A FORCE FEEDBACK CONTROLLER";
-            activeForces += "cambio: " + car_controller.motor.cambio;
-            activeForces += "aceleracion: " + car_controller.motor.aceleracion;
-            activeForces += "freno: " + car_controller.motor.freno;
-            activeForces += "rpm: " + car_controller.motor.rpm;
-            activeForces += "embriague: " + car_controller.motor.embriague;
+            activeForces = "";
+            activeForces += "cambio: " + car_controller.motor.cambio + "\n";
+            activeForces += "aceleracion: " + car_controller.motor.aceleracion + "\n";
+            activeForces += "freno: " + car_controller.motor.freno + "\n";
+            activeForces += "rpm: " + car_controller.motor.rpm + "\n";
+            activeForces += "embriague: " + car_controller.motor.embriague + "\n";
         }
         else
         {

@@ -134,8 +134,9 @@ public class CarController : MonoBehaviour {
         {
 			float targetAcceleration = Input.GetAxis("Vertical");
 			float targetSteer = Input.GetAxis("Horizontal");
+            motor.embriague = Input.GetAxis("Fire1");
 
-			if (Input.GetButton("Jump") || !Enable)
+            if (Input.GetButton("Jump") || !Enable)
 			{
 				motor.freno = 1;
 				motor.aceleracion = 0;
@@ -143,8 +144,9 @@ public class CarController : MonoBehaviour {
 			else
 			{
 				motor.freno = 0;
-				motor.aceleracion = targetAcceleration;
-			}
+                motor.aceleracion = Mathf.Max(targetAcceleration, 0);
+				motor.freno = Mathf.Max(-targetAcceleration, 0);
+            }
 
             // steering
             if (Enable)
