@@ -43,8 +43,8 @@ public class Motor
     {
         if (encendido())
         {
-            float base_aceleracion = max_rpm / min_rpm;
-            rpm = Mathf.MoveTowards(rpm, aceleracion * max_rpm, rpm_velocidad * Time.deltaTime);
+            float base_aceleracion = min_rpm / max_rpm;
+            rpm = Mathf.MoveTowards(rpm, (aceleracion + base_aceleracion) / (1 - base_aceleracion) * max_rpm, rpm_velocidad * Time.deltaTime);
         }
     }
 
