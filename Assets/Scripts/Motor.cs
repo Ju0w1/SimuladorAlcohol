@@ -31,7 +31,7 @@ public class Motor
     internal float obtenerTorque(float rpm, float radius)
     {
         //throw new NotImplementedException();
-        return aceleracion * 400;
+        return aceleracion * 400 * cambio;
     }
 
     internal float obtenerFreno(float rpm, float radius)
