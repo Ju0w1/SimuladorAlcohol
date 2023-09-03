@@ -87,7 +87,7 @@ public class GameController : MonoBehaviour {
 
 	void SetTimeScale (float newScale) {
 		Time.timeScale = newScale;
-		TimeScaleText.text = "Time scale: " + Time.timeScale.ToString("#0.#");
+		//TimeScaleText.text = "Time scale: " + Time.timeScale.ToString("#0.#");
 		if (newScale > 0) {
 			Time.fixedDeltaTime = FixedDeltaTimeStart * newScale;
 		}

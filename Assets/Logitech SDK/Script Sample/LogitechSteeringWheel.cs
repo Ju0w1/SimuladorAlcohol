@@ -6,6 +6,7 @@ public class LogitechSteeringWheel : MonoBehaviour
 {
 
     LogitechGSDK.LogiControllerPropertiesData properties;
+    public CarController car_controller;
     private string actualState;
     private string activeForces;
     private string propertiesEdit;
@@ -46,9 +47,9 @@ public class LogitechSteeringWheel : MonoBehaviour
     void OnGUI()
     {
         activeForces = GUI.TextArea(new Rect(10, 10, 180, 200), activeForces, 400);
-        propertiesEdit = GUI.TextArea(new Rect(200, 10, 200, 200), propertiesEdit, 400);
-        actualState = GUI.TextArea(new Rect(410, 10, 300, 200), actualState, 1000);
-        buttonStatus = GUI.TextArea(new Rect(720, 10, 300, 200), buttonStatus, 1000);
+        //propertiesEdit = GUI.TextArea(new Rect(200, 10, 200, 200), propertiesEdit, 400);
+        //actualState = GUI.TextArea(new Rect(410, 10, 300, 200), actualState, 1000);
+        //buttonStatus = GUI.TextArea(new Rect(720, 10, 300, 200), buttonStatus, 1000);
         GUI.Label(new Rect(10, 400, 800, 400), forcesLabel);
     }
 
@@ -334,7 +335,12 @@ public class LogitechSteeringWheel : MonoBehaviour
         }
         else if (!LogitechGSDK.LogiIsConnected(0))
         {
-            actualState = "PLEASE PLUG IN A STEERING WHEEL OR A FORCE FEEDBACK CONTROLLER";
+            //actualState = "PLEASE PLUG IN A STEERING WHEEL OR A FORCE FEEDBACK CONTROLLER";
+            activeForces += "cambio: " + car_controller.motor.cambio;
+            activeForces += "aceleracion: " + car_controller.motor.aceleracion;
+            activeForces += "freno: " + car_controller.motor.freno;
+            activeForces += "rpm: " + car_controller.motor.rpm;
+            activeForces += "embriague: " + car_controller.motor.embriague;
         }
         else
         {

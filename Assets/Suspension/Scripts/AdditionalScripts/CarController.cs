@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -17,6 +18,8 @@ public class CarController : MonoBehaviour {
 	[SerializeField] List<WheelPreset> DrivingWheels = new List<WheelPreset>();
 	[SerializeField] List<WheelPreset> SteeringWheels = new List<WheelPreset>();
 
+	public Motor motor = new Motor(100, 1, 1);
+
 	Rigidbody RB;
 	HashSet<WheelPreset> AllWheels = new HashSet<WheelPreset>();
 	public float CurrentAcceleration;
@@ -29,12 +32,10 @@ public class CarController : MonoBehaviour {
 
 	public float volante, acelerador, freno, embriague;
 
-	public int cambioActual;
-
 	public bool activar = false;
 	public bool activar2 = false;
 
-	private void Awake () {
+    private void Awake () {
 		Enable = false;
 		RB = GetComponent<Rigidbody>();
 		RB.centerOfMass = COM.transform.localPosition;
@@ -45,17 +46,17 @@ public class CarController : MonoBehaviour {
 		foreach (var wheel in DrivingWheels) {
 			AllWheels.Add(wheel);
 		}
-		
 	}
 
 	private void Update () {
-
-		if (LogitechGSDK.LogiUpdate() && LogitechGSDK.LogiIsConnected(0))
+		//Debug.Log("LogitechGSDK.LogiUpdate() " + LogitechGSDK.LogiUpdate());
+        //Debug.Log("LogitechGSDK.LogiIsConnected(0) " + LogitechGSDK.LogiIsConnected(0));
+        if (LogitechGSDK.LogiUpdate() && LogitechGSDK.LogiIsConnected(0))
 		{
-			LogitechGSDK.DIJOYSTATE2ENGINES rec;
+            LogitechGSDK.DIJOYSTATE2ENGINES rec;
 			rec = LogitechGSDK.LogiGetStateUnity(0);
 
-			volante = rec.lX / 32768f;
+            volante = rec.lX / 32768f;
 
 			if (rec.lY > 0)
 			{
@@ -75,59 +76,59 @@ public class CarController : MonoBehaviour {
 				freno = rec.lRz / -32768f;
 			}
 
-			if (rec.rglSlider[0] > 0)
+            if (rec.rglSlider[0] > 0)
 			{
-				embriague = 0;
+                embriague = 0;
 			}
 			else if (rec.rglSlider[0] < 0)
 			{
-				embriague = rec.rglSlider[0] / -32768f;
+                embriague = rec.rglSlider[0] / -32768f;
 			}
 
 
 
-			if (embriague > 0.5f)
+            for (int i = 12; i <= 18; i++)
 			{
-				if (rec.rgbButtons[4] == 128 && !activar)
+				if (rec.rgbButtons[i] == 128)
 				{
-					activar = true;
-				}
-
-				if (activar && rec.rgbButtons[4] == 0)
-				{
-					cambioActual = Mathf.Min(cambioActual + 1, 6);
-					activar = false;
-				}
-
-				if (rec.rgbButtons[5] == 128 && !activar2)
-				{
-					activar2 = true;
-				}
-
-				if (rec.rgbButtons[5] == 0 && activar2)
-				{
-					cambioActual = Mathf.Max(cambioActual - 1, -1);
-					activar2 = false;
-				}
+					int nuevoCambio = i - 11;
+					if (nuevoCambio > 6)
+                        nuevoCambio = -1;
+					motor.cambio = nuevoCambio;
+                }
+			}
 				
-			}
-
-
-			if (freno > 0 || !Enable || embriague > 0.5f)
+			// Este codigo es solo si no se tiene palanca de cambios
+			if (rec.rgbButtons[4] == 128 && !activar)
 			{
-				CurrentAcceleration = 0;
-				CurrentBrake = Mathf.MoveTowards(CurrentBrake, 1, AccelerationBrakeTorque * Time.deltaTime);
-			}
-			else
-			{
-				CurrentAcceleration = Mathf.MoveTowards(CurrentAcceleration, acelerador * cambioActual, AccelerationTorque * Time.deltaTime);
-				CurrentBrake = 0;
+				activar = true;
 			}
 
+			if (activar && rec.rgbButtons[4] == 0)
+			{
+				motor.cambio = Mathf.Min(motor.cambio + 1, 6);
+				activar = false;
+			}
+				
+
+			if (rec.rgbButtons[5] == 128 && !activar2)
+			{
+				activar2 = true;
+			}
+
+			if (rec.rgbButtons[5] == 0 && activar2)
+			{
+                motor.cambio = Mathf.Max(motor.cambio - 1, -1);
+				activar2 = false;
+			}
+			
+			motor.aceleracion = acelerador;
+			motor.freno = freno;
+			motor.embriague = embriague;
+
+			// steering
 			if (Enable)
-			{
 				CurrentSteer = Mathf.MoveTowards(CurrentSteer, volante, AccelerationSteer * Time.deltaTime);
-			}
 		}
 		else
         {
@@ -136,35 +137,37 @@ public class CarController : MonoBehaviour {
 
 			if (Input.GetButton("Jump") || !Enable)
 			{
-				CurrentAcceleration = 0;
-				CurrentBrake = Mathf.MoveTowards(CurrentBrake, 1, AccelerationBrakeTorque * Time.deltaTime);
+				motor.freno = 1;
+				motor.aceleracion = 0;
 			}
 			else
 			{
-				CurrentAcceleration = Mathf.MoveTowards(CurrentAcceleration, targetAcceleration, AccelerationTorque * Time.deltaTime);
-				CurrentBrake = 0;
+				motor.freno = 0;
+				motor.aceleracion = targetAcceleration;
 			}
 
-			if (Enable)
-			{
+            // steering
+            if (Enable)
 				CurrentSteer = Mathf.MoveTowards(CurrentSteer, targetSteer, AccelerationSteer * Time.deltaTime);
-			}
 		}
 		 
 	}
 
-	private void FixedUpdate () {
+    private void FixedUpdate () {
+
 		WheelCollider wheelCollider;
 		for (int i = 0; i < DrivingWheels.Count; i++) {
 			wheelCollider = DrivingWheels[i].WheelCollider;
-			wheelCollider.motorTorque = CurrentAcceleration * MaxMotorTorque;
-			wheelCollider.brakeTorque = DrivingWheels[i].BrakeTorque * CurrentBrake * MaxBrakeTorque;
+			if (i == 0) // asegura que se haga una sola vez esto
+				motor.update(wheelCollider.rpm, wheelCollider.radius);
+			wheelCollider.motorTorque = motor.obtenerTorque(wheelCollider.rpm, wheelCollider.radius);
+			wheelCollider.brakeTorque = DrivingWheels[i].BrakeTorque * motor.freno * motor.obtenerFreno(wheelCollider.rpm, wheelCollider.radius);
 		}
 
 		for (int i = 0; i < SteeringWheels.Count; i++) {
 			wheelCollider = SteeringWheels[i].WheelCollider;
 			wheelCollider.steerAngle = CurrentSteer * SteeringWheels[i].SteerAngle;
-			wheelCollider.brakeTorque = DrivingWheels[i].BrakeTorque * CurrentBrake * MaxBrakeTorque;
+			wheelCollider.brakeTorque = DrivingWheels[i].BrakeTorque * motor.freno * MaxBrakeTorque;
 		}
 	}
 
