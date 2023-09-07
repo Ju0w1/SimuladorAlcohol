@@ -340,8 +340,11 @@ public class LogitechSteeringWheel : MonoBehaviour
             activeForces += "cambio: " + car_controller.motor.cambio + "\n";
             activeForces += "aceleracion: " + car_controller.motor.aceleracion + "\n";
             activeForces += "freno: " + car_controller.motor.freno + "\n";
-            activeForces += "rpm: " + car_controller.motor.rpm + "\n";
-            activeForces += "embriague: " + car_controller.motor.embriague + "\n";
+            activeForces += "rpm: " + car_controller.motor.rpm.ToString("0.00") + "\n";
+            activeForces += "embriague: " + car_controller.motor.embrague + "\n";
+            activeForces += "\n";
+            activeForces += "rpm rueda: " + car_controller.obtener_rpm().ToString("0.00") + "\n";
+            activeForces += "rpm rueda objetivo: " + car_controller.motor.obtener_rpm_objetivo().ToString("0.00") + "\n";
         }
         else
         {
