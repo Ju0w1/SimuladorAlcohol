@@ -56,6 +56,16 @@ public class LogitechSteeringWheel : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        activeForces = "";
+        activeForces += "cambio: " + car_controller.motor.cambio + "\n";
+        activeForces += "aceleracion: " + car_controller.motor.aceleracion + "\n";
+        activeForces += "freno: " + car_controller.motor.freno + "\n";
+        activeForces += "rpm: " + car_controller.motor.rpm.ToString("0.00") + "\n";
+        activeForces += "embriague: " + car_controller.motor.embrague + "\n";
+        activeForces += "velocidad: " + (car_controller.RB.velocity.magnitude * 3.6f).ToString("0") + "km/h";
+        activeForces += "\n";
+        activeForces += "rpm rueda: " + car_controller.obtener_rpm().ToString("0.00") + "\n";
+        activeForces += "rpm rueda objetivo: " + car_controller.motor.obtener_rpm_objetivo().ToString("0.00") + "\n";
         //All the test functions are called on the first device plugged in(index = 0)
         if (LogitechGSDK.LogiUpdate() && LogitechGSDK.LogiIsConnected(0))
         {
@@ -153,7 +163,7 @@ public class LogitechSteeringWheel : MonoBehaviour
 
 
             // FORCES AND EFFECTS 
-            activeForces = "Active forces and effects :\n";
+            activeForces += "Active forces and effects :\n";
 
             //Spring Force -> S
             if (Input.GetKeyUp(KeyCode.S))
@@ -336,15 +346,6 @@ public class LogitechSteeringWheel : MonoBehaviour
         else if (!LogitechGSDK.LogiIsConnected(0))
         {
             //actualState = "PLEASE PLUG IN A STEERING WHEEL OR A FORCE FEEDBACK CONTROLLER";
-            activeForces = "";
-            activeForces += "cambio: " + car_controller.motor.cambio + "\n";
-            activeForces += "aceleracion: " + car_controller.motor.aceleracion + "\n";
-            activeForces += "freno: " + car_controller.motor.freno + "\n";
-            activeForces += "rpm: " + car_controller.motor.rpm.ToString("0.00") + "\n";
-            activeForces += "embriague: " + car_controller.motor.embrague + "\n";
-            activeForces += "\n";
-            activeForces += "rpm rueda: " + car_controller.obtener_rpm().ToString("0.00") + "\n";
-            activeForces += "rpm rueda objetivo: " + car_controller.motor.obtener_rpm_objetivo().ToString("0.00") + "\n";
         }
         else
         {

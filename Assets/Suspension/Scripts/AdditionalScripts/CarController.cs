@@ -21,7 +21,7 @@ public class CarController : MonoBehaviour {
 
 	public Motor motor = new Motor(1, 2000, 1);
 
-	Rigidbody RB;
+	public Rigidbody RB;
 	AudioSource audiosource;
 	HashSet<WheelPreset> AllWheels = new HashSet<WheelPreset>();
 	public float CurrentAcceleration;
@@ -77,11 +77,23 @@ public class CarController : MonoBehaviour {
             motor.cambio = 0;
         if (Input.GetKeyUp(KeyCode.R))
             motor.cambio = -1;
+        if (Input.GetKeyUp(KeyCode.Return) && !motor.encendido())
+		{
+            motor.encender();
+            audiosource.time = 0;
+		}
         // Controlando el auto a travez del volante
         if (LogitechGSDK.LogiUpdate() && LogitechGSDK.LogiIsConnected(0))
 		{
             LogitechGSDK.DIJOYSTATE2ENGINES rec;
 			rec = LogitechGSDK.LogiGetStateUnity(0);
+
+			// Tecla de prender el motor
+			if (rec.rgbButtons[23] == 128 && !motor.encendido())
+			{
+				motor.encender();
+                audiosource.time = 0;
+            }
 
             volante = rec.lX / 32768f;
 
@@ -112,8 +124,7 @@ public class CarController : MonoBehaviour {
                 embriague = rec.rglSlider[0] / -32768f;
 			}
 
-
-
+			bool cambio_pressed = false;
             for (int i = 12; i <= 18; i++)
 			{
 				if (rec.rgbButtons[i] == 128)
@@ -122,8 +133,11 @@ public class CarController : MonoBehaviour {
 					if (nuevoCambio > 6)
                         nuevoCambio = -1;
 					motor.cambio = nuevoCambio;
+					cambio_pressed = true;
                 }
 			}
+			if (!cambio_pressed)
+				motor.cambio = 0;
 				
 			// Este codigo es solo si no se tiene palanca de cambios
 			if (rec.rgbButtons[4] == 128 && !activar)
@@ -187,7 +201,7 @@ public class CarController : MonoBehaviour {
 	{
 		// esto puede estar todo mal
 		float factor = Vector3.Dot(DrivingWheels[0].WheelCollider.transform.forward, RB.velocity);
-        return RB.velocity.magnitude* factor / (Mathf.PI * DrivingWheels[0].WheelCollider.radius * 60f) * 800;
+        return RB.velocity.magnitude * factor / (Mathf.PI * DrivingWheels[0].WheelCollider.radius * 60f) * 800;
     }
 
     private void FixedUpdate () {
@@ -201,7 +215,7 @@ public class CarController : MonoBehaviour {
 				motor.update(rpm, wheelCollider.radius);
 			}
 			float value = motor.obtenerTorque(rpm, wheelCollider.radius);
-			Debug.Log(value);
+			//Debug.Log(value);
             wheelCollider.motorTorque = value;
 			wheelCollider.brakeTorque = DrivingWheels[i].BrakeTorque * motor.freno * motor.obtenerFreno(wheelCollider.rpm, wheelCollider.radius);
 		}

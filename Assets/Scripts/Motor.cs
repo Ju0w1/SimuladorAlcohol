@@ -35,7 +35,7 @@ public class Motor
 
     private float efecto_embrague()
     {
-        return embrague;
+        return 1 - embrague;
     }
 
     internal float obtenerFreno(float wheel_rpm, float wheel_radius)
@@ -51,13 +51,22 @@ public class Motor
             rpm = Mathf.MoveTowards(rpm, (aceleracion + base_aceleracion) / (1 - base_aceleracion) * max_rpm, rpm_velocidad * Time.deltaTime);
             rpm = Mathf.Min(rpm, max_rpm);
         }
+        /*rpm *= 1.01010101f;
         //rpm = Mathf.Max(rpm - obtener_fuerza_necesaria(wheel_rpm, wheel_radius) * Time.deltaTime * efecto_embrague(), 0);
+        if (embrague < 1)
+        {
+            float force = 0.99f;
+            force *= 1 + Mathf.Abs(obtener_rpm_objetivo() - wheel_rpm) / 10000;
+            Debug.Log(force);
+            rpm *= force;// 1 - 1 / (obtener_rpm_objetivo() - wheel_rpm);
+        }*/
+        //Debug.Log(1 - 1 / (obtener_rpm_objetivo() - wheel_rpm));
     }
 
     public float obtener_rpm_objetivo()
     {
-        float rpm_objetivo = rpm * cambio;
-        return rpm_objetivo;
+        float rpm_objetivo = rpm * cambio * cambio * 0.3f;
+        return rpm_objetivo * (cambio > 0 ? 1 : -1);
     }
 
     private float obtener_fuerza_necesaria(float wheel_rpm, float wheel_radius)
@@ -65,20 +74,28 @@ public class Motor
         if (cambio == 0)
             return 0;
         float rpm_objetivo = obtener_rpm_objetivo();
-        Debug.Log("ok " + 2000.0f + " " + wheel_rpm + " " + (2000.0f - wheel_rpm));
+
         if (rpm_objetivo - wheel_rpm > 3500)
         {
-            Debug.Log("en serio " + rpm_objetivo + " " + wheel_rpm + " " + (rpm_objetivo - wheel_rpm));
-            rpm = 0;
+            // TODO: cambiar
+            //rpm = 0;
         }
-        return (200.0f - Mathf.Min(Mathf.Abs(rpm_objetivo - wheel_rpm) / 10 / 10, 200.0f)) * (rpm_objetivo > wheel_rpm ? 1 : -1);
+        //return (200.0f - Mathf.Min(Mathf.Abs(rpm_objetivo - wheel_rpm) / 10 / 10, 200.0f)) * (rpm_objetivo > wheel_rpm ? 1 : -1);
+        float calculo_primario = 200.0f - Mathf.Min(Mathf.Abs(rpm_objetivo - wheel_rpm) / 100, 200.0f);
+        calculo_primario *= Mathf.Abs(6 - cambio);
+        return calculo_primario * (rpm_objetivo > wheel_rpm ? 1 : -1);
     }
 
-    private bool encendido()
+    public bool encendido()
     {
         bool valor = rpm >= min_rpm && rpm <= max_rpm;
         if (!valor)
             rpm = 0;
         return valor;
+    }
+
+    public void encender()
+    {
+        rpm = min_rpm;
     }
 }
