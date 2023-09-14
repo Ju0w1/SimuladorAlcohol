@@ -63,12 +63,12 @@ public class Motor
     // Inverso de obtener_rpm_objetivo_rueda
     public float obtener_rpm_objetivo_motor(float wheel_rpm)
     {
-        return Mathf.Abs(wheel_rpm / (0.3f * cambio * cambio));
+        return Mathf.Abs(wheel_rpm / (0.2f * cambio * cambio));
     }
 
     public float obtener_rpm_objetivo_rueda()
     {
-        float rpm_objetivo = rpm * cambio * cambio * 0.3f;
+        float rpm_objetivo = rpm * cambio * cambio * 0.2f;
         return rpm_objetivo * (cambio > 0 ? 1 : -1);
     }
 
@@ -83,9 +83,10 @@ public class Motor
             // TODO: cambiar
             //rpm = 0;
         }
-        //return (200.0f - Mathf.Min(Mathf.Abs(rpm_objetivo - wheel_rpm) / 10 / 10, 200.0f)) * (rpm_objetivo > wheel_rpm ? 1 : -1);
         float calculo_primario = 200.0f - Mathf.Min(Mathf.Abs(rpm_objetivo - wheel_rpm) / 100, 200.0f);
         calculo_primario *= Mathf.Abs(6 - cambio);
+        //float calculo_primario = Mathf.Abs(rpm_objetivo - wheel_rpm);
+        //calculo_primario *= Mathf.Abs(6 - cambio);
         return calculo_primario * (rpm_objetivo > wheel_rpm ? 1 : -1);
     }
 

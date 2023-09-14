@@ -49,9 +49,18 @@ public class CarController : MonoBehaviour {
 		foreach (var wheel in DrivingWheels) {
 			AllWheels.Add(wheel);
 		}
+
 	}
 
 	private void Update () {
+        if (Input.GetKeyUp(KeyCode.L))
+		{
+			System.Random random = new System.Random();
+			float factor = 5;// + (float)random.NextDouble() * 1;
+			Time.timeScale = factor;
+			//Time.fixedDeltaTime = 0.02f * factor;
+		}
+		
 		// Controlando audio basandonos en los rpm
 		if (motor.rpm >= motor.min_rpm)
 		{
