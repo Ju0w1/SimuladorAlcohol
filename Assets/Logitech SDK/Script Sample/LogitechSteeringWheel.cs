@@ -65,7 +65,9 @@ public class LogitechSteeringWheel : MonoBehaviour
         activeForces += "velocidad: " + (car_controller.RB.velocity.magnitude * 3.6f).ToString("0") + "km/h";
         activeForces += "\n";
         activeForces += "rpm rueda: " + car_controller.obtener_rpm().ToString("0.00") + "\n";
-        activeForces += "rpm rueda objetivo: " + car_controller.motor.obtener_rpm_objetivo().ToString("0.00") + "\n";
+        activeForces += "rpm rueda objetivo: " + car_controller.motor.obtener_rpm_objetivo_rueda().ToString("0.00") + "\n";
+        activeForces += "rpm rueda - rpm rueda objetivo: " + Mathf.Abs(car_controller.obtener_rpm() - car_controller.motor.obtener_rpm_objetivo_rueda()).ToString("0.00") + "\n";
+        activeForces += "rpm inverso de rueda objetivo: " + car_controller.motor.obtener_rpm_objetivo_motor(car_controller.obtener_rpm()).ToString("0.00") + "\n";
         //All the test functions are called on the first device plugged in(index = 0)
         if (LogitechGSDK.LogiUpdate() && LogitechGSDK.LogiIsConnected(0))
         {

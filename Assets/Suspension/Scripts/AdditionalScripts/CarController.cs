@@ -175,7 +175,7 @@ public class CarController : MonoBehaviour {
         {
 			float targetAcceleration = Input.GetAxis("Vertical");
 			float targetSteer = Input.GetAxis("Horizontal");
-            motor.embrague = 1 - Input.GetAxis("Fire1");
+            motor.embrague = Input.GetAxis("Fire1");
 
             if (Input.GetButton("Jump") || !Enable)
 			{
@@ -216,9 +216,12 @@ public class CarController : MonoBehaviour {
 			}
 			float value = motor.obtenerTorque(rpm, wheelCollider.radius);
 			//Debug.Log(value);
-            wheelCollider.motorTorque = value;
+			wheelCollider.motorTorque = value;
 			wheelCollider.brakeTorque = DrivingWheels[i].BrakeTorque * motor.freno * motor.obtenerFreno(wheelCollider.rpm, wheelCollider.radius);
 		}
+		//float vel = Mathf.MoveTowards(RB.velocity.magnitude, motor.obtener_rpm_objetivo_rueda() / 80.0f, motor.efecto_embrague() * Time.deltaTime);
+		//if (motor.embrague == 0)
+		//	RB.velocity = transform.forward * motor.obtener_rpm_objetivo_rueda() / 80.0f;
 
 		for (int i = 0; i < SteeringWheels.Count; i++) {
 			wheelCollider = SteeringWheels[i].WheelCollider;

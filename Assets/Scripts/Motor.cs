@@ -33,7 +33,7 @@ public class Motor
         return obtener_fuerza_necesaria(rpm, radius) * efecto_embrague();
     }
 
-    private float efecto_embrague()
+    public float efecto_embrague()
     {
         return 1 - embrague;
     }
@@ -47,23 +47,26 @@ public class Motor
     {
         if (encendido())
         {
+            if (rpm > 0) // TODO: cambiar
+            {
+                rpm = Mathf.MoveTowards(rpm, obtener_rpm_objetivo_motor(wheel_rpm), Time.deltaTime * 10.0f);
+                //Debug.Log("hora " + obtener_rpm_objetivo_motor(wheel_rpm) + " " + rpm);
+            }
+
             float base_aceleracion = min_rpm / max_rpm;
             rpm = Mathf.MoveTowards(rpm, (aceleracion + base_aceleracion) / (1 - base_aceleracion) * max_rpm, rpm_velocidad * Time.deltaTime);
             rpm = Mathf.Min(rpm, max_rpm);
+    
         }
-        /*rpm *= 1.01010101f;
-        //rpm = Mathf.Max(rpm - obtener_fuerza_necesaria(wheel_rpm, wheel_radius) * Time.deltaTime * efecto_embrague(), 0);
-        if (embrague < 1)
-        {
-            float force = 0.99f;
-            force *= 1 + Mathf.Abs(obtener_rpm_objetivo() - wheel_rpm) / 10000;
-            Debug.Log(force);
-            rpm *= force;// 1 - 1 / (obtener_rpm_objetivo() - wheel_rpm);
-        }*/
-        //Debug.Log(1 - 1 / (obtener_rpm_objetivo() - wheel_rpm));
     }
 
-    public float obtener_rpm_objetivo()
+    // Inverso de obtener_rpm_objetivo_rueda
+    public float obtener_rpm_objetivo_motor(float wheel_rpm)
+    {
+        return Mathf.Abs(wheel_rpm / (0.3f * cambio * cambio));
+    }
+
+    public float obtener_rpm_objetivo_rueda()
     {
         float rpm_objetivo = rpm * cambio * cambio * 0.3f;
         return rpm_objetivo * (cambio > 0 ? 1 : -1);
@@ -73,7 +76,7 @@ public class Motor
     {
         if (cambio == 0)
             return 0;
-        float rpm_objetivo = obtener_rpm_objetivo();
+        float rpm_objetivo = obtener_rpm_objetivo_rueda();
 
         if (rpm_objetivo - wheel_rpm > 3500)
         {
