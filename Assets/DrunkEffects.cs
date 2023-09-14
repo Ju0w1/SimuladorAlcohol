@@ -21,7 +21,7 @@ public class DrunkEffects : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        
+        material.SetFloat(Shader.PropertyToID("_IntencidadVisionDoble"), 0.5f);
     }
 
     private void OnRenderImage(RenderTexture source, RenderTexture destination)

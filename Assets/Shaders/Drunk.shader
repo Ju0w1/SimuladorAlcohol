@@ -1,8 +1,9 @@
-Shader "Hidden/Drunk"
+Shader"Hidden/Drunk"
 {
     Properties
     {
         _MainTex ("Texture", 2D) = "white" {}
+        _IntencidadVisionDoble ("Intencidad de la vision doble", Float) = 0.01
     }
     SubShader
     {
@@ -38,10 +39,11 @@ Shader "Hidden/Drunk"
             }
 
             sampler2D _MainTex;
+            float _IntencidadVisionDoble;
 
             fixed4 frag (v2f i) : SV_Target
             {
-                float distance = 0.01f;
+                float distance = _IntencidadVisionDoble;
                 fixed4 col_a = tex2D(_MainTex, i.uv + float2(-distance, 0));
                 fixed4 col_b = tex2D(_MainTex, i.uv + float2(distance, 0));
                 // just invert the colors
