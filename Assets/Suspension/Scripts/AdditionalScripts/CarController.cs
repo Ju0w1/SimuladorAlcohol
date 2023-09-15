@@ -49,8 +49,51 @@ public class CarController : MonoBehaviour {
 	}
 
 	private void Update () {
+<<<<<<< Updated upstream
 		//Debug.Log("LogitechGSDK.LogiUpdate() " + LogitechGSDK.LogiUpdate());
         //Debug.Log("LogitechGSDK.LogiIsConnected(0) " + LogitechGSDK.LogiIsConnected(0));
+=======
+		Time.timeScale = 1 + UnityEngine.Random.value * 0.1f; // Se usa para controlar el cambio del tiempo
+        if (Input.GetKeyUp(KeyCode.L))
+		{
+			// System.Random random = new System.Random();
+			// float factor = 5;// + (float)random.NextDouble() * 1;
+			// Time.timeScale = factor;
+			//Time.fixedDeltaTime = 0.02f * factor;
+		}
+		
+		// Controlando audio basandonos en los rpm
+		if (motor.rpm >= motor.min_rpm)
+		{
+			audiosource.pitch = 1 + (motor.rpm - motor.min_rpm) / (motor.max_rpm - motor.min_rpm);
+			audiosource.volume = 1;
+		}
+		else
+            audiosource.volume = 0;
+		// Cambiando cambios basado en numeros del teclado
+		if (Input.GetKeyUp(KeyCode.Alpha1))
+			motor.cambio = 1;
+        if (Input.GetKeyUp(KeyCode.Alpha2))
+            motor.cambio = 2;
+        if (Input.GetKeyUp(KeyCode.Alpha3))
+            motor.cambio = 3;
+        if (Input.GetKeyUp(KeyCode.Alpha4))
+            motor.cambio = 4;
+        if (Input.GetKeyUp(KeyCode.Alpha5))
+            motor.cambio = 5;
+        if (Input.GetKeyUp(KeyCode.Alpha6))
+            motor.cambio = 6;
+        if (Input.GetKeyUp(KeyCode.Alpha0))
+            motor.cambio = 0;
+        if (Input.GetKeyUp(KeyCode.R))
+            motor.cambio = -1;
+        if (Input.GetKeyUp(KeyCode.Return) && !motor.encendido())
+		{
+            motor.encender();
+            audiosource.time = 0;
+		}
+        // Controlando el auto a travez del volante
+>>>>>>> Stashed changes
         if (LogitechGSDK.LogiUpdate() && LogitechGSDK.LogiIsConnected(0))
 		{
             LogitechGSDK.DIJOYSTATE2ENGINES rec;
