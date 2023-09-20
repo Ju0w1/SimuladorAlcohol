@@ -44,12 +44,14 @@ Shader"Hidden/Drunk"
             fixed4 frag (v2f i) : SV_Target
             {
                 float distance = _IntencidadVisionDoble;
+                float num = cos(_Time.x * 10);
+                //distance += num;
+                distance *= num;
                 fixed4 col_a = tex2D(_MainTex, i.uv + float2(-distance, 0));
                 fixed4 col_b = tex2D(_MainTex, i.uv + float2(distance, 0));
-                // just invert the colors
-                //col.rgb = 1 - col.rgb;
+    
                 return fixed4((col_a.rgb + col_b.rgb) / 2, 1.0f);
-}
+            }
             ENDCG
         }
     }

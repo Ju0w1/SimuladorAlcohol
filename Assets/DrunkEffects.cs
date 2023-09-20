@@ -4,12 +4,18 @@ using UnityEngine;
 
 public class DrunkEffects : MonoBehaviour
 {
-    public Material material;
-    public Shader shader;
+    public Shader shader_doble_vision;
+    private Material material_doble_vision;
+    public Shader shader_blur;
+    private Material material_blur;
+
+    public float intencidad_vision_doble = 0.01f;
+    public int intencidad_blur = 2;
 
     private void Awake()
     {
-        material = new Material(shader);
+        material_doble_vision = new Material(shader_doble_vision);
+        material_blur = new Material(shader_blur);
     }
 
     // Start is called before the first frame update
@@ -21,11 +27,17 @@ public class DrunkEffects : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        material.SetFloat(Shader.PropertyToID("_IntencidadVisionDoble"), 0.5f);
+        material_doble_vision.SetFloat(Shader.PropertyToID("_IntencidadVisionDoble"), intencidad_vision_doble);
+        material_blur.SetInt(Shader.PropertyToID("_IntencidadBlur"), intencidad_blur);
     }
+
+    private RenderTexture intermedio;
 
     private void OnRenderImage(RenderTexture source, RenderTexture destination)
     {
-        Graphics.Blit(source, destination, material);
+        if (intermedio == null || source.width != intermedio.width || source.height != intermedio.height)
+            intermedio = new RenderTexture(source);
+        Graphics.Blit(source, intermedio, material_doble_vision);
+        Graphics.Blit(intermedio, destination, material_blur);
     }
 }
