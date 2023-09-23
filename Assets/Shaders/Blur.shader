@@ -3,7 +3,7 @@ Shader "Hidden/Blur"
     Properties
     {
         _MainTex ("Texture", 2D) = "white" {}
-        _IntencidadBlur ("Intencidad de la vision doble", Int) = 2
+        _IntencidadBlur ("Intencidad de la vision doble", Float) = 1
     }
     SubShader
     {
@@ -40,7 +40,7 @@ Shader "Hidden/Blur"
 
             sampler2D _MainTex;
 
-            int _IntencidadBlur;
+            float _IntencidadBlur;
 
             fixed4 frag (v2f i) : SV_Target
             {
@@ -48,15 +48,21 @@ Shader "Hidden/Blur"
                 float2 _PixelSize = float2(1, 1) / _ScreenParams;
     
                 //_IntencidadBlur = 0;
-                fixed4 col = fixed4(0, 0, 0, 0); // = tex2D(_MainTex, i.uv + _PixelSize * float2(x, y));
-                for (int x = -_IntencidadBlur; x <= _IntencidadBlur; x++)
+                float4 col = float4(0, 0, 0, 0); // = tex2D(_MainTex, i.uv + _PixelSize * float2(x, y));
+                int sample_size = 4;
+                float sum_b = 0;
+                for (int x = -sample_size; x <= sample_size; x++)
                 {
-                    for (int y = -_IntencidadBlur; y <= _IntencidadBlur; y++)
+                    for (int y = -sample_size; y <= sample_size; y++)
                     {
-                        col += tex2D(_MainTex, i.uv + _PixelSize * float2(x, y));
+                        float e = length(float2(x, y));
+                        float v = max(-(0.5 / _IntencidadBlur) * e * e + 1, 0);
+                        sum_b += v;
+                        col += tex2D(_MainTex, i.uv + _PixelSize * float2(x, y)) * v;
                     }
                 }
-                col /= pow(_IntencidadBlur * 2 + 1, 2);
+                col /= sum_b;
+                //col /= pow(sample_size * 2 + 1, 2);
                 return col;
             }
             ENDCG

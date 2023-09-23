@@ -9,8 +9,9 @@ public class DrunkEffects : MonoBehaviour
     public Shader shader_blur;
     private Material material_blur;
 
-    public float intencidad_vision_doble = 0.01f;
-    public int intencidad_blur = 2;
+    public float alcolemia = 1;
+    private float intencidad_vision_doble = 0.01f;
+    private float intencidad_blur = 1;
 
     private void Awake()
     {
@@ -27,8 +28,11 @@ public class DrunkEffects : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        intencidad_vision_doble = alcolemia / 1000;
+        intencidad_blur = alcolemia;
+
         material_doble_vision.SetFloat(Shader.PropertyToID("_IntencidadVisionDoble"), intencidad_vision_doble);
-        material_blur.SetInt(Shader.PropertyToID("_IntencidadBlur"), intencidad_blur);
+        material_blur.SetFloat(Shader.PropertyToID("_IntencidadBlur"), intencidad_blur);
     }
 
     private RenderTexture intermedio;
@@ -37,7 +41,12 @@ public class DrunkEffects : MonoBehaviour
     {
         if (intermedio == null || source.width != intermedio.width || source.height != intermedio.height)
             intermedio = new RenderTexture(source);
-        Graphics.Blit(source, intermedio, material_doble_vision);
-        Graphics.Blit(intermedio, destination, material_blur);
+        if (alcolemia != 0)
+        {
+            Graphics.Blit(source, intermedio, material_doble_vision);
+            Graphics.Blit(intermedio, destination, material_blur);
+        }
+        else
+            Graphics.Blit(source, destination);
     }
 }

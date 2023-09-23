@@ -9,10 +9,12 @@ public class LogitechSteeringWheel : MonoBehaviour
     public CarController car_controller;
     private string actualState;
     private string activeForces;
+    private float hSliderValue;
     private string propertiesEdit;
     private string buttonStatus;
     private string forcesLabel;
     string[] activeForceAndEffect;
+    public DrunkEffects drunk_effects;
 
     // Use this for initialization
     void Start()
@@ -47,6 +49,7 @@ public class LogitechSteeringWheel : MonoBehaviour
     void OnGUI()
     {
         activeForces = GUI.TextArea(new Rect(10, 10, 180, 200), activeForces, 400);
+        drunk_effects.alcolemia = GUI.HorizontalSlider(new Rect(200, 25, 200, 30), drunk_effects.alcolemia, 0.0F, 10.0F);
         //propertiesEdit = GUI.TextArea(new Rect(200, 10, 200, 200), propertiesEdit, 400);
         //actualState = GUI.TextArea(new Rect(410, 10, 300, 200), actualState, 1000);
         //buttonStatus = GUI.TextArea(new Rect(720, 10, 300, 200), buttonStatus, 1000);

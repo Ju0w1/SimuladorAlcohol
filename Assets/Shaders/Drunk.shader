@@ -47,10 +47,10 @@ Shader"Hidden/Drunk"
                 float num = cos(_Time.x * 10);
                 //distance += num;
                 distance *= num;
-                fixed4 col_a = tex2D(_MainTex, i.uv + float2(-distance, 0));
-                fixed4 col_b = tex2D(_MainTex, i.uv + float2(distance, 0));
+                float4 col_a = tex2D(_MainTex, i.uv + float2(-distance, 0));
+                float4 col_b = tex2D(_MainTex, i.uv + float2(distance, 0));
     
-                return fixed4((col_a.rgb + col_b.rgb) / 2, 1.0f);
+                return float4((col_a.rgb + col_b.rgb) / 2, 1.0f);
             }
             ENDCG
         }
