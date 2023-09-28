@@ -49,7 +49,7 @@ public class Motor
         {
             if (rpm > 0) // TODO: cambiar
             {
-                rpm = Mathf.MoveTowards(rpm, obtener_rpm_objetivo_motor(wheel_rpm), Time.deltaTime * 10.0f);
+                rpm = Mathf.MoveTowards(rpm, obtener_rpm_objetivo_motor(wheel_rpm), 2000);
                 //Debug.Log("hora " + obtener_rpm_objetivo_motor(wheel_rpm) + " " + rpm);
             }
 
@@ -78,10 +78,10 @@ public class Motor
             return 0;
         float rpm_objetivo = obtener_rpm_objetivo_rueda();
 
-        if (rpm_objetivo - wheel_rpm > 3500)
+        if (rpm_objetivo - wheel_rpm > 120)
         {
             // TODO: cambiar
-            //rpm = 0;
+            rpm = 0;
         }
         float calculo_primario = 200.0f - Mathf.Min(Mathf.Abs(rpm_objetivo - wheel_rpm) / 100, 200.0f);
         calculo_primario *= Mathf.Abs(6 - cambio);
