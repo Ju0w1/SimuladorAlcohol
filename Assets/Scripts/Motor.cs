@@ -11,6 +11,7 @@ public class Motor
 
     public float max_rpm; // rpm maximo de motor
     public float min_rpm; // minimo de rpm para que el motor se mantenga encendido
+    public float max_tot_rpm; // maximos rpm, pero de verdad, si se pasa se apaga
 
     public float rpm = 0; // rpm actual
     public int cambio = -1; // -1 es reversa y 0 es neutro
@@ -22,6 +23,7 @@ public class Motor
     {
         this.min_rpm = min_rpm;
         this.max_rpm = max_rpm;
+        this.max_tot_rpm = max_rpm + 1000;
         this.fuerza_base = fuerza_base;
 
         // debug
@@ -51,8 +53,8 @@ public class Motor
                 rpm = Mathf.MoveTowards(rpm, obtener_rpm_objetivo_motor(wheel_rpm), 2000);
 
             float base_aceleracion = min_rpm / max_rpm;
-            rpm = Mathf.MoveTowards(rpm, (aceleracion + base_aceleracion) / (1 - base_aceleracion) * max_rpm, rpm_velocidad * Time.deltaTime);
-            rpm = Mathf.Min(rpm, max_rpm);
+            rpm = Mathf.MoveTowards(rpm, (aceleracion + base_aceleracion) / (1 - base_aceleracion) * max_rpm, rpm_velocidad * Time.deltaTime * 3);
+            //rpm = Mathf.Min(rpm, max_rpm);
     
         }
     }
@@ -75,8 +77,8 @@ public class Motor
             return 0;
         float rpm_objetivo = obtener_rpm_objetivo_rueda();
 
-        if ((rpm_objetivo - wheel_rpm) * efecto_embrague() > 70)
-            rpm = 0;
+        //if ((rpm_objetivo - wheel_rpm) * efecto_embrague() > 70)
+        //    rpm = 0;
         float calculo_primario = 200.0f - Mathf.Min(Mathf.Abs(rpm_objetivo - wheel_rpm) / 100, 200.0f);
         calculo_primario *= Mathf.Abs(6 - cambio);
         //float calculo_primario = Mathf.Abs(rpm_objetivo - wheel_rpm);
@@ -86,7 +88,7 @@ public class Motor
 
     public bool encendido()
     {
-        bool valor = rpm >= min_rpm && rpm <= max_rpm;
+        bool valor = rpm >= min_rpm && rpm <= max_tot_rpm;
         if (!valor)
             rpm = 0;
         return valor;
