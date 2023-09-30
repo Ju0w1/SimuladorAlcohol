@@ -47,11 +47,8 @@ public class Motor
     {
         if (encendido())
         {
-            if (rpm > 0) // TODO: cambiar
-            {
+            if (efecto_embrague() == 1)
                 rpm = Mathf.MoveTowards(rpm, obtener_rpm_objetivo_motor(wheel_rpm), 2000);
-                //Debug.Log("hora " + obtener_rpm_objetivo_motor(wheel_rpm) + " " + rpm);
-            }
 
             float base_aceleracion = min_rpm / max_rpm;
             rpm = Mathf.MoveTowards(rpm, (aceleracion + base_aceleracion) / (1 - base_aceleracion) * max_rpm, rpm_velocidad * Time.deltaTime);
@@ -78,11 +75,8 @@ public class Motor
             return 0;
         float rpm_objetivo = obtener_rpm_objetivo_rueda();
 
-        if (rpm_objetivo - wheel_rpm > 120)
-        {
-            // TODO: cambiar
+        if ((rpm_objetivo - wheel_rpm) * efecto_embrague() > 70)
             rpm = 0;
-        }
         float calculo_primario = 200.0f - Mathf.Min(Mathf.Abs(rpm_objetivo - wheel_rpm) / 100, 200.0f);
         calculo_primario *= Mathf.Abs(6 - cambio);
         //float calculo_primario = Mathf.Abs(rpm_objetivo - wheel_rpm);

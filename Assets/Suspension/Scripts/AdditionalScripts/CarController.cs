@@ -184,7 +184,7 @@ public class CarController : MonoBehaviour {
         {
 			float targetAcceleration = Input.GetAxis("Vertical");
 			float targetSteer = Input.GetAxis("Horizontal");
-            motor.embrague = Input.GetAxis("Fire1");
+            motor.embrague = Input.GetAxis("Cancel");
 
             if (Input.GetButton("Jump") || !Enable)
 			{
