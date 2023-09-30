@@ -28,6 +28,8 @@ public class CarController : MonoBehaviour {
 	float CurrentBrake;
 	float CurrentSteer;
 
+	public bool CentrarVolante;
+
 	public bool Enable { get; set; }
 
 	LogitechGSDK.LogiControllerPropertiesData properties;
@@ -37,7 +39,21 @@ public class CarController : MonoBehaviour {
 	public bool activar = false;
 	public bool activar2 = false;
 
-    private void Awake () {
+	public int cantidadDeChoques = 0;
+
+	void OnCollisionEnter(Collision collision)
+	{
+		if (collision.gameObject.tag == "IaCar")
+		{
+			cantidadDeChoques++;
+
+			LogitechGSDK.LogiPlayFrontalCollisionForce(0, 60);	
+
+		}
+		Debug.Log("Entered collision with " + collision.gameObject.name);
+	}
+
+	private void Awake () {
 		Enable = false;
 		audiosource = GetComponent<AudioSource>();
 		RB = GetComponent<Rigidbody>();
@@ -49,7 +65,7 @@ public class CarController : MonoBehaviour {
 		foreach (var wheel in DrivingWheels) {
 			AllWheels.Add(wheel);
 		}
-
+		CentrarVolante = true;
 	}
 
 	private void Update () {
@@ -96,6 +112,28 @@ public class CarController : MonoBehaviour {
 		{
             LogitechGSDK.DIJOYSTATE2ENGINES rec;
 			rec = LogitechGSDK.LogiGetStateUnity(0);
+
+
+			// fuerza del movimiento del volante para centrarlo
+			//Spring Force -> S
+			if (CentrarVolante)
+			{
+				if (LogitechGSDK.LogiIsPlaying(0, LogitechGSDK.LOGI_FORCE_SPRING))
+				{
+					LogitechGSDK.LogiStopSpringForce(0);
+					//activeForceAndEffect[0] = "";
+				}
+				else
+				{
+					LogitechGSDK.LogiPlaySpringForce(0, 0, 30, 50);
+					//activeForceAndEffect[0] = "Spring Force\n ";
+				}
+				CentrarVolante = !CentrarVolante;
+			}
+
+			
+
+
 
 			// Tecla de prender el motor
 			if (rec.rgbButtons[23] == 128 && !motor.encendido())

@@ -171,19 +171,19 @@ public class LogitechSteeringWheel : MonoBehaviour
             activeForces += "Active forces and effects :\n";
 
             //Spring Force -> S
-            if (Input.GetKeyUp(KeyCode.S))
-            {
-                if (LogitechGSDK.LogiIsPlaying(0, LogitechGSDK.LOGI_FORCE_SPRING))
-                {
-                    LogitechGSDK.LogiStopSpringForce(0);
-                    activeForceAndEffect[0] = "";
-                }
-                else
-                {
-                    LogitechGSDK.LogiPlaySpringForce(0, 50, 50, 50);
-                    activeForceAndEffect[0] = "Spring Force\n ";
-                }
-            }
+            //if (Input.GetKeyUp(KeyCode.S))
+            //{
+            //    if (LogitechGSDK.LogiIsPlaying(0, LogitechGSDK.LOGI_FORCE_SPRING))
+            //    {
+            //        LogitechGSDK.LogiStopSpringForce(0);
+            //        activeForceAndEffect[0] = "";
+            //    }
+            //    else
+            //    {
+            //        LogitechGSDK.LogiPlaySpringForce(0, 0, 50, 50);
+            //        activeForceAndEffect[0] = "Spring Force\n ";
+            //    }
+            //}
             /*
             //Constant Force -> C
             if (Input.GetKeyUp(KeyCode.C))
@@ -336,6 +336,9 @@ public class LogitechSteeringWheel : MonoBehaviour
 
             }
             */
+
+
+
             //Play leds -> P
             if (Input.GetKeyUp(KeyCode.P))
             {
