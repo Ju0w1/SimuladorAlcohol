@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using UnityEditor.TerrainTools;
 using UnityEngine;
 
 /// <summary>
@@ -9,18 +10,19 @@ using UnityEngine;
 [RequireComponent(typeof(Rigidbody))]
 public class CarController : MonoBehaviour {
 
-	[SerializeField] float MaxMotorTorque = 1500;
+	//[SerializeField] float MaxMotorTorque = 1500;
 	[SerializeField] float MaxBrakeTorque = 500;
-	[SerializeField] float AccelerationTorque = 1f;
-	[SerializeField] float AccelerationBrakeTorque = 0.5f;
+	//[SerializeField] float AccelerationTorque = 1f;
+	//[SerializeField] float AccelerationBrakeTorque = 0.5f;
 	[SerializeField] float AccelerationSteer = 10f;
 	[SerializeField] GameObject COM;
 	[SerializeField] List<WheelPreset> DrivingWheels = new List<WheelPreset>();
 	[SerializeField] List<WheelPreset> SteeringWheels = new List<WheelPreset>();
 
-	public Motor motor = new Motor(100, 1, 1);
+	public Motor motor = new Motor(1, 2000, 1);
 
-	Rigidbody RB;
+	public Rigidbody RB;
+	AudioSource audiosource;
 	HashSet<WheelPreset> AllWheels = new HashSet<WheelPreset>();
 	public float CurrentAcceleration;
 	float CurrentBrake;
@@ -37,6 +39,7 @@ public class CarController : MonoBehaviour {
 
     private void Awake () {
 		Enable = false;
+		audiosource = GetComponent<AudioSource>();
 		RB = GetComponent<Rigidbody>();
 		RB.centerOfMass = COM.transform.localPosition;
 		RB.ResetInertiaTensor();
@@ -46,15 +49,60 @@ public class CarController : MonoBehaviour {
 		foreach (var wheel in DrivingWheels) {
 			AllWheels.Add(wheel);
 		}
+
 	}
 
 	private void Update () {
-		//Debug.Log("LogitechGSDK.LogiUpdate() " + LogitechGSDK.LogiUpdate());
-        //Debug.Log("LogitechGSDK.LogiIsConnected(0) " + LogitechGSDK.LogiIsConnected(0));
+        if (Input.GetKeyUp(KeyCode.L))
+		{
+			System.Random random = new System.Random();
+			float factor = 5;// + (float)random.NextDouble() * 1;
+			Time.timeScale = factor;
+			//Time.fixedDeltaTime = 0.02f * factor;
+		}
+		
+		// Controlando audio basandonos en los rpm
+		if (motor.rpm >= motor.min_rpm)
+		{
+			audiosource.pitch = 1 + (motor.rpm - motor.min_rpm) / (motor.max_rpm - motor.min_rpm);
+			audiosource.volume = 1;
+		}
+		else
+            audiosource.volume = 0;
+		// Cambiando cambios basado en numeros del teclado
+		if (Input.GetKeyUp(KeyCode.Alpha1))
+			motor.cambio = 1;
+        if (Input.GetKeyUp(KeyCode.Alpha2))
+            motor.cambio = 2;
+        if (Input.GetKeyUp(KeyCode.Alpha3))
+            motor.cambio = 3;
+        if (Input.GetKeyUp(KeyCode.Alpha4))
+            motor.cambio = 4;
+        if (Input.GetKeyUp(KeyCode.Alpha5))
+            motor.cambio = 5;
+        if (Input.GetKeyUp(KeyCode.Alpha6))
+            motor.cambio = 6;
+        if (Input.GetKeyUp(KeyCode.Alpha0))
+            motor.cambio = 0;
+        if (Input.GetKeyUp(KeyCode.R))
+            motor.cambio = -1;
+        if (Input.GetKeyUp(KeyCode.Return) && !motor.encendido())
+		{
+            motor.encender();
+            audiosource.time = 0;
+		}
+        // Controlando el auto a travez del volante
         if (LogitechGSDK.LogiUpdate() && LogitechGSDK.LogiIsConnected(0))
 		{
             LogitechGSDK.DIJOYSTATE2ENGINES rec;
 			rec = LogitechGSDK.LogiGetStateUnity(0);
+
+			// Tecla de prender el motor
+			if (rec.rgbButtons[23] == 128 && !motor.encendido())
+			{
+				motor.encender();
+                audiosource.time = 0;
+            }
 
             volante = rec.lX / 32768f;
 
@@ -85,8 +133,7 @@ public class CarController : MonoBehaviour {
                 embriague = rec.rglSlider[0] / -32768f;
 			}
 
-
-
+			bool cambio_pressed = false;
             for (int i = 12; i <= 18; i++)
 			{
 				if (rec.rgbButtons[i] == 128)
@@ -95,8 +142,11 @@ public class CarController : MonoBehaviour {
 					if (nuevoCambio > 6)
                         nuevoCambio = -1;
 					motor.cambio = nuevoCambio;
+					cambio_pressed = true;
                 }
 			}
+			if (!cambio_pressed)
+				motor.cambio = 0;
 				
 			// Este codigo es solo si no se tiene palanca de cambios
 			if (rec.rgbButtons[4] == 128 && !activar)
@@ -124,17 +174,17 @@ public class CarController : MonoBehaviour {
 			
 			motor.aceleracion = acelerador;
 			motor.freno = freno;
-			motor.embriague = embriague;
+			motor.embrague = embriague;
 
 			// steering
 			if (Enable)
 				CurrentSteer = Mathf.MoveTowards(CurrentSteer, volante, AccelerationSteer * Time.deltaTime);
 		}
-		else
+		else // controlando el auto a travez del teclado
         {
 			float targetAcceleration = Input.GetAxis("Vertical");
 			float targetSteer = Input.GetAxis("Horizontal");
-            motor.embriague = Input.GetAxis("Fire1");
+            motor.embrague = Input.GetAxis("Cancel");
 
             if (Input.GetButton("Jump") || !Enable)
 			{
@@ -155,16 +205,32 @@ public class CarController : MonoBehaviour {
 		 
 	}
 
-    private void FixedUpdate () {
+	// Obtiene el rpm de las dos ruedas, incluso cuando una va mas rapido que otra XD
+	public float obtener_rpm()
+	{
+		// esto puede estar todo mal
+		float factor = Vector3.Dot(DrivingWheels[0].WheelCollider.transform.forward, RB.velocity);
+        return RB.velocity.magnitude * factor / (Mathf.PI * DrivingWheels[0].WheelCollider.radius * 60f) * 800;
+    }
 
-		WheelCollider wheelCollider;
+    private void FixedUpdate () {
+		float rpm = obtener_rpm();
+		
+        WheelCollider wheelCollider;
 		for (int i = 0; i < DrivingWheels.Count; i++) {
 			wheelCollider = DrivingWheels[i].WheelCollider;
 			if (i == 0) // asegura que se haga una sola vez esto
-				motor.update(wheelCollider.rpm, wheelCollider.radius);
-			wheelCollider.motorTorque = motor.obtenerTorque(wheelCollider.rpm, wheelCollider.radius);
+			{
+				motor.update(rpm, wheelCollider.radius);
+			}
+			float value = motor.obtenerTorque(rpm, wheelCollider.radius);
+			//Debug.Log(value);
+			wheelCollider.motorTorque = value;
 			wheelCollider.brakeTorque = DrivingWheels[i].BrakeTorque * motor.freno * motor.obtenerFreno(wheelCollider.rpm, wheelCollider.radius);
 		}
+		//float vel = Mathf.MoveTowards(RB.velocity.magnitude, motor.obtener_rpm_objetivo_rueda() / 80.0f, motor.efecto_embrague() * Time.deltaTime);
+		//if (motor.embrague == 0)
+		//	RB.velocity = transform.forward * motor.obtener_rpm_objetivo_rueda() / 80.0f;
 
 		for (int i = 0; i < SteeringWheels.Count; i++) {
 			wheelCollider = SteeringWheels[i].WheelCollider;
@@ -173,7 +239,21 @@ public class CarController : MonoBehaviour {
 		}
 	}
 
-	[System.Serializable]
+	public float GetWheelGroundRPM(WheelCollider collider)
+	{
+		WheelHit hit;
+
+		if (collider.GetGroundHit(out hit))
+		{
+            float RadsToRevs = Mathf.PI * 2;
+            float SlipInDirection = hit.forwardSlip / (RadsToRevs * collider.radius) / RadsToRevs * 60 / Time.deltaTime;
+			return collider.rpm - SlipInDirection;
+		}
+		else
+			return collider.rpm;
+	}
+
+    [System.Serializable]
 	private class WheelPreset {
 		public WheelCollider WheelCollider;
 		public float BrakeTorque = 1;
