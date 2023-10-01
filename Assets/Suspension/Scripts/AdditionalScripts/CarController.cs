@@ -43,11 +43,11 @@ public class CarController : MonoBehaviour {
 
 	void OnCollisionEnter(Collision collision)
 	{
-		if (collision.gameObject.tag == "IaCar")
+		if (collision.gameObject.tag == "IaCar"	|| collision.gameObject.tag == "Colisionable")
 		{
 			cantidadDeChoques++;
 
-			LogitechGSDK.LogiPlayFrontalCollisionForce(0, 60);	
+			LogitechGSDK.LogiPlayFrontalCollisionForce(0, 70 );	
 
 		}
 		Debug.Log("Entered collision with " + collision.gameObject.name);
@@ -171,44 +171,53 @@ public class CarController : MonoBehaviour {
                 embriague = rec.rglSlider[0] / -32768f;
 			}
 
-			bool cambio_pressed = false;
-            for (int i = 12; i <= 18; i++)
-			{
-				if (rec.rgbButtons[i] == 128)
+			if (LogitechGSDK.LogiGetShifterMode(0) == 1)
+            {
+				bool cambio_pressed = false;
+				for (int i = 12; i <= 18; i++)
 				{
-					int nuevoCambio = i - 11;
-					if (nuevoCambio > 6)
-                        nuevoCambio = -1;
-					motor.cambio = nuevoCambio;
-					cambio_pressed = true;
-                }
+					if (rec.rgbButtons[i] == 128)
+					{
+						int nuevoCambio = i - 11;
+						if (nuevoCambio > 6)
+							nuevoCambio = -1;
+						motor.cambio = nuevoCambio;
+						cambio_pressed = true;
+					}
+				}
+				if (!cambio_pressed)
+					motor.cambio = 0;
+            }
+            else
+            {
+				// Este codigo es solo si no se tiene palanca de cambios
+				if (rec.rgbButtons[4] == 128 && !activar)
+				{
+					activar = true;
+				}
+
+				if (activar && rec.rgbButtons[4] == 0)
+				{
+					motor.cambio = Mathf.Min(motor.cambio + 1, 6);
+					activar = false;
+				}
+
+
+				if (rec.rgbButtons[5] == 128 && !activar2)
+				{
+					activar2 = true;
+				}
+
+				if (rec.rgbButtons[5] == 0 && activar2)
+				{
+					motor.cambio = Mathf.Max(motor.cambio - 1, -1);
+					activar2 = false;
+				}
 			}
-			if (!cambio_pressed)
-				motor.cambio = 0;
+
+			
 				
-			// Este codigo es solo si no se tiene palanca de cambios
-			if (rec.rgbButtons[4] == 128 && !activar)
-			{
-				activar = true;
-			}
-
-			if (activar && rec.rgbButtons[4] == 0)
-			{
-				motor.cambio = Mathf.Min(motor.cambio + 1, 6);
-				activar = false;
-			}
-				
-
-			if (rec.rgbButtons[5] == 128 && !activar2)
-			{
-				activar2 = true;
-			}
-
-			if (rec.rgbButtons[5] == 0 && activar2)
-			{
-                motor.cambio = Mathf.Max(motor.cambio - 1, -1);
-				activar2 = false;
-			}
+			
 			
 			motor.aceleracion = acelerador;
 			motor.freno = freno;
