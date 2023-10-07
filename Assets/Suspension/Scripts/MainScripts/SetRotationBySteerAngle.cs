@@ -24,7 +24,7 @@ public class SetRotationBySteerAngle : MonoBehaviour {
 
 	private void LateUpdate () {
 		//Calculate angle
-		float steer = WheelCollider.steerAngle * SteerMultiplier;
+		float steer = GetSteerAngle();
 
 		//Raotate object
 		switch (AxisRotate) {
@@ -33,4 +33,9 @@ public class SetRotationBySteerAngle : MonoBehaviour {
 			case Axis.Z: transform.localRotation = StartRotation * Quaternion.AngleAxis(steer, Vector3.forward); break;
 		}
 	}
+
+	public float GetSteerAngle()
+	{
+		return WheelCollider.steerAngle * SteerMultiplier;
+    }
 }
