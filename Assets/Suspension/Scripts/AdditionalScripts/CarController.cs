@@ -14,7 +14,7 @@ public class CarController : MonoBehaviour {
 	[SerializeField] float MaxBrakeTorque = 500;
 	//[SerializeField] float AccelerationTorque = 1f;
 	//[SerializeField] float AccelerationBrakeTorque = 0.5f;
-	[SerializeField] float AccelerationSteer = 0.1f;//10f;
+	[SerializeField] float AccelerationSteer = 10f;
 	[SerializeField] GameObject COM;
 	[SerializeField] List<WheelPreset> DrivingWheels = new List<WheelPreset>();
 	[SerializeField] List<WheelPreset> SteeringWheels = new List<WheelPreset>();
@@ -27,9 +27,6 @@ public class CarController : MonoBehaviour {
 	public float CurrentAcceleration;
 	float CurrentBrake;
 	float CurrentSteer;
-
-	public AgujaController aguja_rpm_controller;
-	public AgujaController aguja_velocidad_controller;
 
 	public bool CentrarVolante;
 
@@ -79,13 +76,9 @@ public class CarController : MonoBehaviour {
 			Time.timeScale = factor;
 			//Time.fixedDeltaTime = 0.02f * factor;
 		}
-
-		// Cambiando panel de la cabina
-		aguja_rpm_controller.SetValue(motor.rpm / motor.max_rpm);
-		aguja_velocidad_controller.SetValue(RB.velocity.magnitude * 3.6f / 120);
-
-        // Controlando audio basandonos en los rpm
-        if (motor.rpm >= motor.min_rpm)
+		
+		// Controlando audio basandonos en los rpm
+		if (motor.rpm >= motor.min_rpm)
 		{
 			audiosource.pitch = 1 + (motor.rpm - motor.min_rpm) / (motor.max_rpm - motor.min_rpm);
 			audiosource.volume = 1;
@@ -137,6 +130,10 @@ public class CarController : MonoBehaviour {
 				}
 				CentrarVolante = !CentrarVolante;
 			}
+
+			
+
+
 
 			// Tecla de prender el motor
 			if (rec.rgbButtons[23] == 128 && !motor.encendido())
