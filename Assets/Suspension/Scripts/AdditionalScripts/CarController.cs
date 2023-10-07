@@ -44,13 +44,15 @@ public class CarController : MonoBehaviour {
 
 	public int cantidadDeChoques = 0;
 
+	public bool cambioH;
+
 	void OnCollisionEnter(Collision collision)
 	{
-		if (collision.gameObject.tag == "IaCar")
+		if (collision.gameObject.tag == "IaCar" || collision.gameObject.tag == "Colisionable")
 		{
 			cantidadDeChoques++;
 
-			LogitechGSDK.LogiPlayFrontalCollisionForce(0, 60);	
+			LogitechGSDK.LogiPlayFrontalCollisionForce(0, 70);	
 
 		}
 		Debug.Log("Entered collision with " + collision.gameObject.name);
@@ -174,20 +176,23 @@ public class CarController : MonoBehaviour {
                 embriague = rec.rglSlider[0] / -32768f;
 			}
 
-			bool cambio_pressed = false;
-            for (int i = 12; i <= 18; i++)
-			{
-				if (rec.rgbButtons[i] == 128)
+            if (cambioH)
+            {
+				bool cambio_pressed = false;
+				for (int i = 12; i <= 18; i++)
 				{
-					int nuevoCambio = i - 11;
-					if (nuevoCambio > 6)
-                        nuevoCambio = -1;
-					motor.cambio = nuevoCambio;
-					cambio_pressed = true;
-                }
-			}
-			if (!cambio_pressed)
-				motor.cambio = 0;
+					if (rec.rgbButtons[i] == 128)
+					{
+						int nuevoCambio = i - 11;
+						if (nuevoCambio > 6)
+							nuevoCambio = -1;
+						motor.cambio = nuevoCambio;
+						cambio_pressed = true;
+					}
+				}
+				if (!cambio_pressed)
+					motor.cambio = 0;
+            }
 				
 			// Este codigo es solo si no se tiene palanca de cambios
 			if (rec.rgbButtons[4] == 128 && !activar)
