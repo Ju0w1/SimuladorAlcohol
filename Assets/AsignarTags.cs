@@ -15,7 +15,8 @@ public class AsignarTags : MonoBehaviour
             if (go.tag == "Untagged")
             {
                 if (go.name == "Capsule" || go.name.Contains("BusStop") || go.name.Contains("hydrant-") || go.name.Contains("pedestrian") || go.name.Contains("ElectricalBox-") || go.name.Contains("Flowerbed-")
-                        || go.name.Contains("Trash-") || go.name.Contains("Traffic_Light") || go.name.Contains("Collider") || go.name.Contains("EB-") || go.name.Contains("StreetLight")
+                        || go.name.Contains("Trash-") || go.name.Contains("Traffic_Light") || go.name.Contains("Collider") || go.name.Contains("EB-") || go.name.Contains("StreetLight") 
+                           || go.name.Contains("Lights")
                         )
                 {
                     go.tag = tagName;

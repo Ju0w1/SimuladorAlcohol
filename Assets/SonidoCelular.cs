@@ -4,9 +4,14 @@ using UnityEngine;
 
 public class SonidoCelular : MonoBehaviour
 {
-    public AudioClip notificacion;
+    //public AudioClip notificacion;
     public int carwait = 10;
     bool keepPlaying = true;
+
+	public int randomNumber = 60;
+	public int posiSonido = 2;
+	public AudioClip[] tonos;// [notificacion, skyline, deadpool, xiaomi, esponja, bells];
+
 
 	void Start()
 	{
@@ -17,9 +22,12 @@ public class SonidoCelular : MonoBehaviour
 	{
 		while (keepPlaying)
 		{
-			GetComponent<AudioSource>().PlayOneShot(notificacion);
+			randomNumber = Random.Range(0, 100);
+			GetComponent<AudioSource>().PlayOneShot(tonos[posiSonido]);
 			Debug.Log("Nueva notificacion");
-			yield return new WaitForSeconds(carwait);
+			posiSonido = Random.Range(0, tonos.Length);
+			Debug.Log(randomNumber);
+			yield return new WaitForSeconds(randomNumber);
 		}
 	}
 }
