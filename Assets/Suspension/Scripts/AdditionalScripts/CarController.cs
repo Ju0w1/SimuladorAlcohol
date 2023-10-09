@@ -19,7 +19,7 @@ public class CarController : MonoBehaviour {
 	[SerializeField] List<WheelPreset> DrivingWheels = new List<WheelPreset>();
 	[SerializeField] List<WheelPreset> SteeringWheels = new List<WheelPreset>();
 
-	public Motor motor = new Motor(1, 2000, 1);
+	public Motor motor = new Motor(50, 2000, 1);
 
 	public Rigidbody RB;
 	AudioSource audiosource;
@@ -83,7 +83,7 @@ public class CarController : MonoBehaviour {
 		}
 
 		// Cambiando panel de la cabina
-		aguja_rpm_controller.SetValue(motor.rpm / motor.max_rpm);
+		aguja_rpm_controller.SetValue(motor.obtener_rpm_objetivo_motor(obtener_rpm()) / motor.max_rpm);
 		aguja_velocidad_controller.SetValue(RB.velocity.magnitude * 3.6f / 120);
 
         // Controlando audio basandonos en los rpm
@@ -230,7 +230,7 @@ public class CarController : MonoBehaviour {
         {
 			float targetAcceleration = Input.GetAxis("Vertical");
 			float targetSteer = Input.GetAxis("Horizontal");
-            motor.embrague = Input.GetAxis("Cancel");
+            motor.embrague = Mathf.MoveTowards(motor.embrague, Input.GetAxis("Cancel"), 0.01f);
 
             if (Input.GetButton("Jump") || !Enable)
 			{
@@ -272,7 +272,7 @@ public class CarController : MonoBehaviour {
 			float value = motor.obtenerTorque(rpm, wheelCollider.radius);
 			//Debug.Log(value);
 			wheelCollider.motorTorque = value;
-			wheelCollider.brakeTorque = DrivingWheels[i].BrakeTorque * motor.freno * motor.obtenerFreno(wheelCollider.rpm, wheelCollider.radius);
+			wheelCollider.brakeTorque = DrivingWheels[i].BrakeTorque * motor.obtenerFreno(wheelCollider.rpm, wheelCollider.radius);
 		}
 		//float vel = Mathf.MoveTowards(RB.velocity.magnitude, motor.obtener_rpm_objetivo_rueda() / 80.0f, motor.efecto_embrague() * Time.deltaTime);
 		//if (motor.embrague == 0)
