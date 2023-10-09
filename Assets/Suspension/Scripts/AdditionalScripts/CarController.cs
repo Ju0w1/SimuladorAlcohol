@@ -29,6 +29,7 @@ public class CarController : MonoBehaviour {
 	float CurrentSteer;
 
 	public AgujaController aguja_rpm_controller;
+	public AgujaController aguja_rpm_interno_controller;
 	public AgujaController aguja_velocidad_controller;
 
 	public bool CentrarVolante;
@@ -73,6 +74,11 @@ public class CarController : MonoBehaviour {
 		CentrarVolante = true;
 	}
 
+	// Logica para apagar en cambios altos
+	public Queue<float> rpm_motor_registrados = new Queue<float>();
+	public float last_rpm_motor_registrado;
+	public float last_rpm_motor_difference;
+
 	private void Update () {
         if (Input.GetKeyUp(KeyCode.L))
 		{
@@ -83,7 +89,13 @@ public class CarController : MonoBehaviour {
 		}
 
 		// Cambiando panel de la cabina
-		aguja_rpm_controller.SetValue(motor.obtener_rpm_objetivo_motor(obtener_rpm()) / motor.max_rpm);
+		last_rpm_motor_registrado = Mathf.Lerp(motor.rpm, motor.obtener_rpm_objetivo_motor(obtener_rpm()), motor.efecto_embrague());
+		rpm_motor_registrados.Enqueue(last_rpm_motor_registrado);
+		if (rpm_motor_registrados.Count > 2)
+			rpm_motor_registrados.Dequeue();
+		last_rpm_motor_difference = Mathf.Abs(last_rpm_motor_registrado - rpm_motor_registrados.Peek());
+		aguja_rpm_controller.SetValue(last_rpm_motor_registrado / motor.max_rpm);
+		aguja_rpm_interno_controller.SetValue(motor.rpm / motor.max_rpm);
 		aguja_velocidad_controller.SetValue(RB.velocity.magnitude * 3.6f / 120);
 
         // Controlando audio basandonos en los rpm
@@ -230,7 +242,7 @@ public class CarController : MonoBehaviour {
         {
 			float targetAcceleration = Input.GetAxis("Vertical");
 			float targetSteer = Input.GetAxis("Horizontal");
-            motor.embrague = Mathf.MoveTowards(motor.embrague, Input.GetAxis("Cancel"), 0.01f);
+            motor.embrague = Mathf.MoveTowards(motor.embrague, Input.GetAxis("Cancel"), Input.GetAxis("Cancel") > motor.embrague ? 0.1f:0.01f);
 
             if (Input.GetButton("Jump") || !Enable)
 			{
@@ -267,7 +279,7 @@ public class CarController : MonoBehaviour {
 			wheelCollider = DrivingWheels[i].WheelCollider;
 			if (i == 0) // asegura que se haga una sola vez esto
 			{
-				motor.update(rpm, wheelCollider.radius);
+				motor.update(rpm, wheelCollider.radius, last_rpm_motor_difference);
 			}
 			float value = motor.obtenerTorque(rpm, wheelCollider.radius);
 			//Debug.Log(value);

@@ -56,6 +56,7 @@ public class LogitechSteeringWheel : MonoBehaviour
         GUI.Label(new Rect(10, 400, 800, 400), forcesLabel);
     }
 
+    float max = 0;
     // Update is called once per frame
     void Update()
     {
@@ -67,6 +68,8 @@ public class LogitechSteeringWheel : MonoBehaviour
         activeForces += "embriague: " + car_controller.motor.embrague + "\n";
         activeForces += "velocidad: " + (car_controller.RB.velocity.magnitude * 3.6f).ToString("0") + "km/h";
         activeForces += "\n";
+        max = Mathf.Max(car_controller.last_rpm_motor_difference, max);
+        activeForces += "rpm registrados diferencia: " + max + "\n";
         activeForces += "rpm rueda: " + car_controller.obtener_rpm().ToString("0.00") + "\n";
         activeForces += "rpm rueda objetivo: " + car_controller.motor.obtener_rpm_objetivo_rueda().ToString("0.00") + "\n";
         activeForces += "rpm rueda - rpm rueda objetivo: " + Mathf.Abs(car_controller.obtener_rpm() - car_controller.motor.obtener_rpm_objetivo_rueda()).ToString("0.00") + "\n";

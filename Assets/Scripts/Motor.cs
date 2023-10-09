@@ -69,7 +69,7 @@ public class Motor
     }
     */
 
-    internal void update(float wheel_rpm, float wheel_radius)
+    internal void update(float wheel_rpm, float wheel_radius, float jump_size)
     {
         if (encendido())
         {
@@ -79,11 +79,9 @@ public class Motor
             rpm = Mathf.MoveTowards(rpm, (aceleracion + base_aceleracion) / (1 - base_aceleracion) * max_rpm, rpm_velocidad * Time.deltaTime * 3);
             //rpm = Mathf.Min(rpm, max_rpm);
             if (Mathf.Lerp(obtener_rpm_objetivo_motor(wheel_rpm), rpm, 1 - efecto_embrague()) < min_tot_rpm)
-            {
-                // Debug.Log("hewow");
                 rpm = 0;
-            }
-    
+            if (jump_size > 1000)
+                rpm = 0;
         }
     }
 
@@ -105,7 +103,7 @@ public class Motor
             return 0;
         float rpm_objetivo = obtener_rpm_objetivo_rueda();
 
-        // if ((rpm_objetivo - wheel_rpm) * efecto_embrague() > 70)
+        // if ((rpm_objetivo - wheel_rpm) * efecto_embrague() > 60 * Mathf.Abs(cambio))
         //     rpm = 0;
         float calculo_primario = 200.0f - Mathf.Min(Mathf.Abs(rpm_objetivo - wheel_rpm) / 100, 200.0f);
         calculo_primario *= Mathf.Abs(6 - cambio);
