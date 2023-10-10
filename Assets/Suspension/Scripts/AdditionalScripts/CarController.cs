@@ -19,7 +19,7 @@ public class CarController : MonoBehaviour {
 	[SerializeField] List<WheelPreset> DrivingWheels = new List<WheelPreset>();
 	[SerializeField] List<WheelPreset> SteeringWheels = new List<WheelPreset>();
 
-	public Motor motor = new Motor(50, 2000, 1);
+	public Motor motor = new Motor(300, 2000, 1);
 
 	public Rigidbody RB;
 	AudioSource audiosource;

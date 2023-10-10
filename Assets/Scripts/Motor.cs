@@ -24,7 +24,7 @@ public class Motor
     {
         this.min_rpm = min_rpm;
         this.max_rpm = max_rpm;
-        this.min_tot_rpm = min_rpm / 2;
+        this.min_tot_rpm = 25;//min_rpm / 2;
         this.max_tot_rpm = max_rpm + 1000;
         this.fuerza_base = fuerza_base;
 
@@ -73,13 +73,16 @@ public class Motor
     {
         if (encendido())
         {
+            // acomoda las revoluciones del motor a las del las ruedas
             rpm = Mathf.MoveTowards(rpm, obtener_rpm_objetivo_motor(wheel_rpm), 2000 * efecto_embrague());
 
-            float base_aceleracion = min_rpm / max_rpm;
-            rpm = Mathf.MoveTowards(rpm, (aceleracion + base_aceleracion) / (1 - base_aceleracion) * max_rpm, rpm_velocidad * Time.deltaTime * 3);
-            //rpm = Mathf.Min(rpm, max_rpm);
+            // acomoda las revoluciones del motor hacia la que indica el acelerador
+            float rpm_objetivo = aceleracion * (max_rpm - min_rpm) + min_rpm;
+            rpm = Mathf.MoveTowards(rpm, rpm_objetivo, rpm_velocidad * Time.deltaTime * 3);
+            // esto apaga el motor si las revoluciones son muy bajas, mezcla las revoluciones del motor con las de las ruedas para obtener un valor mas realista
             if (Mathf.Lerp(obtener_rpm_objetivo_motor(wheel_rpm), rpm, 1 - efecto_embrague()) < min_tot_rpm)
                 rpm = 0;
+            // esto permite apagar el motor si el cambio de cambios fue muy mal hecho
             if (jump_size > 500)
                 rpm = 0;
         }
@@ -114,7 +117,9 @@ public class Motor
 
     public bool encendido()
     {
-        bool valor = rpm >= min_tot_rpm && rpm <= max_tot_rpm;
+        // esta variable sirve para que el no acelerar apague el motor en segunda marcha
+        float factor_por_cambio = Mathf.Abs(cambio) * 3.2f * efecto_embrague();
+        bool valor = rpm >= min_tot_rpm * factor_por_cambio && rpm <= max_tot_rpm;
         if (!valor)
             rpm = 0;
         return valor;
