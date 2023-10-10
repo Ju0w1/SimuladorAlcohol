@@ -80,7 +80,7 @@ public class Motor
             //rpm = Mathf.Min(rpm, max_rpm);
             if (Mathf.Lerp(obtener_rpm_objetivo_motor(wheel_rpm), rpm, 1 - efecto_embrague()) < min_tot_rpm)
                 rpm = 0;
-            if (jump_size > 1000)
+            if (jump_size > 500)
                 rpm = 0;
         }
     }
