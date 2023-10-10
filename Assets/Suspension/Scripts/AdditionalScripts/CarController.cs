@@ -89,7 +89,10 @@ public class CarController : MonoBehaviour {
 		}
 
 		// Cambiando panel de la cabina
-		last_rpm_motor_registrado = Mathf.Lerp(motor.rpm, motor.obtener_rpm_objetivo_motor(obtener_rpm()), motor.efecto_embrague());
+		if (motor.cambio != 0)
+			last_rpm_motor_registrado = Mathf.Lerp(motor.rpm, motor.obtener_rpm_objetivo_motor(obtener_rpm()), motor.efecto_embrague());
+		else
+			last_rpm_motor_registrado = motor.rpm;
 		rpm_motor_registrados.Enqueue(last_rpm_motor_registrado);
 		if (rpm_motor_registrados.Count > 2)
 			rpm_motor_registrados.Dequeue();

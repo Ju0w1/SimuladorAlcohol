@@ -73,8 +73,11 @@ public class Motor
     {
         if (encendido())
         {
-            // acomoda las revoluciones del motor a las del las ruedas
-            rpm = Mathf.MoveTowards(rpm, obtener_rpm_objetivo_motor(wheel_rpm), 2000 * efecto_embrague());
+            if (cambio != 0)
+            {
+                // acomoda las revoluciones del motor a las del las ruedas
+                rpm = Mathf.MoveTowards(rpm, obtener_rpm_objetivo_motor(wheel_rpm), 2000 * efecto_embrague());
+            }
 
             // acomoda las revoluciones del motor hacia la que indica el acelerador
             float rpm_objetivo = aceleracion * (max_rpm - min_rpm) + min_rpm;
