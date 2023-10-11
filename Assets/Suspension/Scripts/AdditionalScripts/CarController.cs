@@ -19,6 +19,8 @@ public class CarController : MonoBehaviour {
 	[SerializeField] List<WheelPreset> DrivingWheels = new List<WheelPreset>();
 	[SerializeField] List<WheelPreset> SteeringWheels = new List<WheelPreset>();
 
+	public GearShifterController gearshifter_controller;
+
 	public Motor motor = new Motor(300, 2000, 1);
 
 	public Rigidbody RB;
@@ -80,6 +82,14 @@ public class CarController : MonoBehaviour {
 	public float last_rpm_motor_difference;
 
 	private void Update () {
+		// Esto asegura que el gearshifter vuelva al neutro
+		if (motor.cambio == 0 && Time.time > gearshifter_controller.timer)
+		{
+			gearshifter_controller.timer = Time.time + 1;
+			gearshifter_controller.RestaurarNeutro();
+		}
+
+		// Codigo para acelerar la velocidad del juego
         if (Input.GetKeyUp(KeyCode.L))
 		{
 			System.Random random = new System.Random();
@@ -201,12 +211,18 @@ public class CarController : MonoBehaviour {
 						int nuevoCambio = i - 11;
 						if (nuevoCambio > 6)
 							nuevoCambio = -1;
+						if (motor.cambio != nuevoCambio)
+							gearshifter_controller.HacerCambio(motor.cambio, nuevoCambio);
 						motor.cambio = nuevoCambio;
 						cambio_pressed = true;
 					}
 				}
 				if (!cambio_pressed)
+				{
+					if (motor.cambio != 0)
+						gearshifter_controller.HacerCambio(motor.cambio, 0);
 					motor.cambio = 0;
+				}
             }
 				
 			// Este codigo es solo si no se tiene palanca de cambios
