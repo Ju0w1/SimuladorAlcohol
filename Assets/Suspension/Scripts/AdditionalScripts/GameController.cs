@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+using UnityEngine.SceneManagement;
 
 public class GameController : MonoBehaviour {
 
@@ -30,6 +31,8 @@ public class GameController : MonoBehaviour {
 
 	public static GameController Instance;
 
+	public GameObject menu;
+
 	void Start () {
 		CurrentCarIndex = 0;
 		SelectCar(CurrentCarIndex);
@@ -41,6 +44,12 @@ public class GameController : MonoBehaviour {
 	}
 
 	private void Update () {
+		if (Input.GetKeyDown(KeyCode.Escape))
+		{
+			Time.timeScale = 0f;
+			menu.SetActive(true);
+		}
+
 		if (Input.GetKeyDown(ShowHideHelp)) {
 			HelpText.SetActive(!HelpText.activeInHierarchy);
 		}
