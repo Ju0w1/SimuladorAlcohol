@@ -120,6 +120,7 @@ public class CarController : MonoBehaviour {
 		else
             audiosource.volume = 0;
 		// Cambiando cambios basado en numeros del teclado
+        int cambio_antes_de_cambiar = motor.cambio;
 		if (Input.GetKeyUp(KeyCode.Alpha1))
 			motor.cambio = 1;
         if (Input.GetKeyUp(KeyCode.Alpha2))
@@ -136,6 +137,8 @@ public class CarController : MonoBehaviour {
             motor.cambio = 0;
         if (Input.GetKeyUp(KeyCode.R))
             motor.cambio = -1;
+        if (motor.cambio != cambio_antes_de_cambiar)
+        	gearshifter_controller.HacerCambio(cambio_antes_de_cambiar, motor.cambio);
         if (Input.GetKeyUp(KeyCode.Return) && !motor.encendido())
 		{
             motor.encender();

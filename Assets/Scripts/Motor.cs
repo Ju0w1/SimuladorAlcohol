@@ -15,7 +15,7 @@ public class Motor
     public float max_tot_rpm; // maximos rpm, pero de verdad, si se pasa se apaga
 
     public float rpm = 0; // rpm actual
-    public int cambio = -1; // -1 es reversa y 0 es neutro
+    public int cambio = 0; // -1 es reversa y 0 es neutro
     public float aceleracion = 0;
     public float embrague = 0;
     public float freno = 0;

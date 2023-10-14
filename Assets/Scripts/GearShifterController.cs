@@ -7,6 +7,9 @@ public class GearShifterController : MonoBehaviour
     public Queue<Vector2> animacion = new Queue<Vector2>();
     public float velocidad_proceso = 1;
 
+    public GameObject manoIK;
+    public GameObject manopos;
+
     public Vector2 rotation = new Vector2(-7, -7);
 
     public float timer;
@@ -27,6 +30,7 @@ public class GearShifterController : MonoBehaviour
             if (rotation == animacion.Peek())
                 animacion.Dequeue();
         }
+        manoIK.transform.position = manopos.transform.position;//transform.position + transform.forward * 0.32f;
     }
 
     float ObtenerCambioX(int cambio)
