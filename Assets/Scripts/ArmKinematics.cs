@@ -13,9 +13,11 @@ public class ArmKinematics : MonoBehaviour
 
     public GameObject test_point;
 
+
     private float distance_brazo_antebrazo;
     private float distance_antebrazo_mano;
     private bool set_kinematics = false;
+    public bool disable_animator = true;
 
     // Start is called before the first frame update
     void Start()
@@ -24,7 +26,7 @@ public class ArmKinematics : MonoBehaviour
     }
 
     // Update is called once per frame
-    void Update()
+    void LateUpdate()
     {
         if (set_kinematics)
         {
@@ -56,29 +58,10 @@ public class ArmKinematics : MonoBehaviour
             brazo.transform.Rotate(0, -90, 0, Space.Self);
             antebrazo.transform.LookAt(manoIK.transform.position);
             antebrazo.transform.Rotate(90, 0, 0, Space.Self);
-            // antebrazo.transform.Rotate(0, -90, 0, Space.Self);
-            // if plane = xy
-            /*/
-            Vector2[] intersections;
-            Intersect(
-                new Vector2(brazo.transform.position.x, brazo.transform.position.y),
-                distance_brazo_antebrazo,
-                new Vector2(manoIK.transform.position.x, manoIK.transform.position.y),
-                distance_antebrazo_mano,
-                out intersections
-                );
-            var codo = new Vector3(intersections[0].x, intersections[0].y, antebrazo.transform.position.z);
-            if (test_point)
-                test_point.transform.position = codo;
-            brazo.transform.LookAt(codo);
-            brazo.transform.Rotate(90, 0, 0, Space.Self);
-            antebrazo.transform.LookAt(manoIK.transform.position);
-            antebrazo.transform.Rotate(90, 0, 0, Space.Self);
-            //*/
         }
         else if (Time.time > 0.01)
         {
-            if (animator)
+            if (animator && disable_animator)
                 animator.enabled = false;
             set_kinematics = true;
             distance_brazo_antebrazo = Vector3.Distance(brazo.transform.position, antebrazo.transform.position);

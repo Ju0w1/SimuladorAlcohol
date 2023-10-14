@@ -280,7 +280,7 @@ public class CarController : MonoBehaviour {
 
             // steering
             if (Enable)
-				CurrentSteer = Mathf.MoveTowards(CurrentSteer, targetSteer, AccelerationSteer * Time.deltaTime);
+				CurrentSteer = Mathf.MoveTowards(CurrentSteer, targetSteer, AccelerationSteer * Time.deltaTime/* * 0.03f */);
 		}
 		 
 	}
