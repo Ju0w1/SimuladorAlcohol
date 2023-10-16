@@ -1,0 +1,65 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!319 &31900000
+AvatarMask:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_Name: BrazoIzquierdoMask
+  m_Mask: 01000000010000000100000001000000010000000100000001000000000000000100000000000000010000000100000001000000
+  m_Elements:
+  - m_Path: 
+    m_Weight: 1
+  - m_Path: Armature
+    m_Weight: 1
+  - m_Path: Armature/hombro
+    m_Weight: 1
+  - m_Path: Armature/hombro/brazo
+    m_Weight: 1
+  - m_Path: Armature/hombro/brazo/antebrazo
+    m_Weight: 1
+  - m_Path: Armature/hombro/brazo/antebrazo/mano
+    m_Weight: 1
+  - m_Path: Armature/hombro/brazo/antebrazo/mano/anular1
+    m_Weight: 1
+  - m_Path: Armature/hombro/brazo/antebrazo/mano/anular1/anular2
+    m_Weight: 1
+  - m_Path: Armature/hombro/brazo/antebrazo/mano/anular1/anular2/anular2_end
+    m_Weight: 1
+  - m_Path: Armature/hombro/brazo/antebrazo/mano/corazon1
+    m_Weight: 1
+  - m_Path: Armature/hombro/brazo/antebrazo/mano/corazon1/corazon2
+    m_Weight: 1
+  - m_Path: Armature/hombro/brazo/antebrazo/mano/corazon1/corazon2/corazon2_end
+    m_Weight: 1
+  - m_Path: Armature/hombro/brazo/antebrazo/mano/indice1
+    m_Weight: 1
+  - m_Path: Armature/hombro/brazo/antebrazo/mano/indice1/indice2
+    m_Weight: 1
+  - m_Path: Armature/hombro/brazo/antebrazo/mano/indice1/indice2/indice2_end
+    m_Weight: 1
+  - m_Path: Armature/hombro/brazo/antebrazo/mano/menique1
+    m_Weight: 1
+  - m_Path: Armature/hombro/brazo/antebrazo/mano/menique1/menique2
+    m_Weight: 1
+  - m_Path: Armature/hombro/brazo/antebrazo/mano/menique1/menique2/menique2_end
+    m_Weight: 1
+  - m_Path: Armature/hombro/brazo/antebrazo/mano/pulgar_base
+    m_Weight: 1
+  - m_Path: Armature/hombro/brazo/antebrazo/mano/pulgar_base/pulgar1
+    m_Weight: 1
+  - m_Path: Armature/hombro/brazo/antebrazo/mano/pulgar_base/pulgar1/pulgar2
+    m_Weight: 1
+  - m_Path: Armature/hombro/brazo/antebrazo/mano/pulgar_base/pulgar1/pulgar2/pulgar2_end
+    m_Weight: 1
+  - m_Path: Armature/IKelbow
+    m_Weight: 1
+  - m_Path: Armature/IKelbow/IKelbow_end
+    m_Weight: 1
+  - m_Path: Armature/IKmano
+    m_Weight: 1
+  - m_Path: Armature/IKmano/IKmano_end
+    m_Weight: 1
+  - m_Path: Brazo
+    m_Weight: 1

@@ -64,26 +64,16 @@ public class LogitechSteeringWheel : MonoBehaviour
     //    GUI.Label(new Rect(10, 400, 800, 400), forcesLabel);
     //}
 
+    float max = 0;
     // Update is called once per frame
     void Update()
     {
         drunk_effects.alcolemia = PlayerPrefs.GetFloat("ebriedad");
         Debug.Log(PlayerPrefs.GetFloat("ebriedad"));
-        //activeForces = "";
-        //activeForces += "cambio: " + car_controller.motor.cambio + "\n";
-        //activeForces += "aceleracion: " + car_controller.motor.aceleracion + "\n";
-        //activeForces += "freno: " + car_controller.motor.freno + "\n";
-        //activeForces += "rpm: " + car_controller.motor.rpm.ToString("0.00") + "\n";
-        //activeForces += "embriague: " + car_controller.motor.embrague + "\n";
-        //activeForces += "velocidad: " + (car_controller.RB.velocity.magnitude * 3.6f).ToString("0") + "km/h";
-        //activeForces += "\n";
-        //activeForces += "rpm rueda: " + car_controller.obtener_rpm().ToString("0.00") + "\n";
-        //activeForces += "rpm rueda objetivo: " + car_controller.motor.obtener_rpm_objetivo_rueda().ToString("0.00") + "\n";
-        //activeForces += "rpm rueda - rpm rueda objetivo: " + Mathf.Abs(car_controller.obtener_rpm() - car_controller.motor.obtener_rpm_objetivo_rueda()).ToString("0.00") + "\n";
-        //activeForces += "rpm inverso de rueda objetivo: " + car_controller.motor.obtener_rpm_objetivo_motor(car_controller.obtener_rpm()).ToString("0.00") + "\n";
-        ////All the test functions are called on the first device plugged in(index = 0)
-        //if (LogitechGSDK.LogiUpdate() && LogitechGSDK.LogiIsConnected(0))
-        //{
+
+        //All the test functions are called on the first device plugged in(index = 0)
+        // if (LogitechGSDK.LogiUpdate() && LogitechGSDK.LogiIsConnected(0))
+        // {
 
         //    //CONTROLLER PROPERTIES
         //    StringBuilder deviceName = new StringBuilder(256);

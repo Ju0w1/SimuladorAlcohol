@@ -19,7 +19,9 @@ public class CarController : MonoBehaviour {
 	[SerializeField] List<WheelPreset> DrivingWheels = new List<WheelPreset>();
 	[SerializeField] List<WheelPreset> SteeringWheels = new List<WheelPreset>();
 
-	public Motor motor = new Motor(1, 2000, 1);
+	public GearShifterController gearshifter_controller;
+
+	public Motor motor = new Motor(300, 2000, 1);
 
 	public Rigidbody RB;
 	AudioSource audiosource;
@@ -29,6 +31,7 @@ public class CarController : MonoBehaviour {
 	float CurrentSteer;
 
 	public AgujaController aguja_rpm_controller;
+	public AgujaController aguja_rpm_interno_controller;
 	public AgujaController aguja_velocidad_controller;
 
 	public bool CentrarVolante;
@@ -73,7 +76,20 @@ public class CarController : MonoBehaviour {
 		CentrarVolante = true;
 	}
 
+	// Logica para apagar en cambios altos
+	public Queue<float> rpm_motor_registrados = new Queue<float>();
+	public float last_rpm_motor_registrado;
+	public float last_rpm_motor_difference;
+
 	private void Update () {
+		// Esto asegura que el gearshifter vuelva al neutro
+		if (motor.cambio == 0 && Time.time > gearshifter_controller.timer)
+		{
+			gearshifter_controller.timer = Time.time + 1;
+			gearshifter_controller.RestaurarNeutro();
+		}
+
+		// Codigo para acelerar la velocidad del juego
         if (Input.GetKeyUp(KeyCode.L))
 		{
 			System.Random random = new System.Random();
@@ -83,7 +99,16 @@ public class CarController : MonoBehaviour {
 		}
 
 		// Cambiando panel de la cabina
-		aguja_rpm_controller.SetValue(motor.rpm / motor.max_rpm);
+		if (motor.cambio != 0)
+			last_rpm_motor_registrado = Mathf.Lerp(motor.rpm, motor.obtener_rpm_objetivo_motor(obtener_rpm()), motor.efecto_embrague());
+		else
+			last_rpm_motor_registrado = motor.rpm;
+		rpm_motor_registrados.Enqueue(last_rpm_motor_registrado);
+		if (rpm_motor_registrados.Count > 2)
+			rpm_motor_registrados.Dequeue();
+		last_rpm_motor_difference = Mathf.Abs(last_rpm_motor_registrado - rpm_motor_registrados.Peek());
+		aguja_rpm_controller.SetValue(last_rpm_motor_registrado / motor.max_rpm);
+		aguja_rpm_interno_controller.SetValue(motor.rpm / motor.max_rpm);
 		aguja_velocidad_controller.SetValue(RB.velocity.magnitude * 3.6f / 120);
 
         // Controlando audio basandonos en los rpm
@@ -95,6 +120,7 @@ public class CarController : MonoBehaviour {
 		else
             audiosource.volume = 0;
 		// Cambiando cambios basado en numeros del teclado
+        int cambio_antes_de_cambiar = motor.cambio;
 		if (Input.GetKeyUp(KeyCode.Alpha1))
 			motor.cambio = 1;
         if (Input.GetKeyUp(KeyCode.Alpha2))
@@ -111,6 +137,8 @@ public class CarController : MonoBehaviour {
             motor.cambio = 0;
         if (Input.GetKeyUp(KeyCode.R))
             motor.cambio = -1;
+        if (motor.cambio != cambio_antes_de_cambiar)
+        	gearshifter_controller.HacerCambio(cambio_antes_de_cambiar, motor.cambio);
         if (Input.GetKeyUp(KeyCode.Return) && !motor.encendido())
 		{
             motor.encender();
@@ -186,12 +214,18 @@ public class CarController : MonoBehaviour {
 						int nuevoCambio = i - 11;
 						if (nuevoCambio > 6)
 							nuevoCambio = -1;
+						if (motor.cambio != nuevoCambio)
+							gearshifter_controller.HacerCambio(motor.cambio, nuevoCambio);
 						motor.cambio = nuevoCambio;
 						cambio_pressed = true;
 					}
 				}
 				if (!cambio_pressed)
+				{
+					if (motor.cambio != 0)
+						gearshifter_controller.HacerCambio(motor.cambio, 0);
 					motor.cambio = 0;
+				}
             }
 				
 			// Este codigo es solo si no se tiene palanca de cambios
@@ -230,7 +264,7 @@ public class CarController : MonoBehaviour {
         {
 			float targetAcceleration = Input.GetAxis("Vertical");
 			float targetSteer = Input.GetAxis("Horizontal");
-            motor.embrague = Input.GetAxis("Cancel");
+            motor.embrague = Mathf.MoveTowards(motor.embrague, Input.GetAxis("Cancel"), Input.GetAxis("Cancel") > motor.embrague ? 0.1f:0.01f);
 
             if (Input.GetButton("Jump") || !Enable)
 			{
@@ -246,7 +280,7 @@ public class CarController : MonoBehaviour {
 
             // steering
             if (Enable)
-				CurrentSteer = Mathf.MoveTowards(CurrentSteer, targetSteer, AccelerationSteer * Time.deltaTime);
+				CurrentSteer = Mathf.MoveTowards(CurrentSteer, targetSteer, AccelerationSteer * Time.deltaTime/* * 0.03f */);
 		}
 		 
 	}
@@ -267,12 +301,12 @@ public class CarController : MonoBehaviour {
 			wheelCollider = DrivingWheels[i].WheelCollider;
 			if (i == 0) // asegura que se haga una sola vez esto
 			{
-				motor.update(rpm, wheelCollider.radius);
+				motor.update(rpm, wheelCollider.radius, last_rpm_motor_difference);
 			}
 			float value = motor.obtenerTorque(rpm, wheelCollider.radius);
 			//Debug.Log(value);
 			wheelCollider.motorTorque = value;
-			wheelCollider.brakeTorque = DrivingWheels[i].BrakeTorque * motor.freno * motor.obtenerFreno(wheelCollider.rpm, wheelCollider.radius);
+			wheelCollider.brakeTorque = DrivingWheels[i].BrakeTorque * motor.obtenerFreno(wheelCollider.rpm, wheelCollider.radius);
 		}
 		//float vel = Mathf.MoveTowards(RB.velocity.magnitude, motor.obtener_rpm_objetivo_rueda() / 80.0f, motor.efecto_embrague() * Time.deltaTime);
 		//if (motor.embrague == 0)
