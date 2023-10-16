@@ -32,6 +32,7 @@ public class GameController : MonoBehaviour {
 	public static GameController Instance;
 
 	public GameObject menu;
+	public int isMenuActive;
 
 	void Start () {
 		CurrentCarIndex = 0;
@@ -41,13 +42,30 @@ public class GameController : MonoBehaviour {
 		Instance = this;
 
 		Debug.Log("SteeringInit:" + LogitechGSDK.LogiSteeringInitialize(false));
+
+		isMenuActive = 0;
 	}
 
 	private void Update () {
+		isMenuActive = PlayerPrefs.GetInt("isMenuActive");
+
 		if (Input.GetKeyDown(KeyCode.Escape))
 		{
-			Time.timeScale = 0f;
-			menu.SetActive(true);
+			if (isMenuActive == 1)
+            {
+				Time.timeScale = 1f;
+				menu.SetActive(false);
+				isMenuActive = 0;
+				PlayerPrefs.SetInt("isMenuActive", isMenuActive);
+			}
+            else
+            {
+				Time.timeScale = 0f;
+				menu.SetActive(true);
+				isMenuActive = 1;
+				PlayerPrefs.SetInt("isMenuActive", isMenuActive);
+			}
+			
 		}
 
 		if (Input.GetKeyDown(ShowHideHelp)) {
