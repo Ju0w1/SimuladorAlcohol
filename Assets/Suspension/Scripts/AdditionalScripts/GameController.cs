@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+using UnityEngine.SceneManagement;
 
 public class GameController : MonoBehaviour {
 
@@ -30,6 +31,9 @@ public class GameController : MonoBehaviour {
 
 	public static GameController Instance;
 
+	public GameObject menu;
+	public int isMenuActive;
+
 	void Start () {
 		CurrentCarIndex = 0;
 		SelectCar(CurrentCarIndex);
@@ -38,9 +42,32 @@ public class GameController : MonoBehaviour {
 		Instance = this;
 
 		Debug.Log("SteeringInit:" + LogitechGSDK.LogiSteeringInitialize(false));
+
+		isMenuActive = 0;
 	}
 
 	private void Update () {
+		isMenuActive = PlayerPrefs.GetInt("isMenuActive");
+
+		if (Input.GetKeyDown(KeyCode.Escape))
+		{
+			if (isMenuActive == 1)
+            {
+				Time.timeScale = 1f;
+				menu.SetActive(false);
+				isMenuActive = 0;
+				PlayerPrefs.SetInt("isMenuActive", isMenuActive);
+			}
+            else
+            {
+				Time.timeScale = 0f;
+				menu.SetActive(true);
+				isMenuActive = 1;
+				PlayerPrefs.SetInt("isMenuActive", isMenuActive);
+			}
+			
+		}
+
 		if (Input.GetKeyDown(ShowHideHelp)) {
 			HelpText.SetActive(!HelpText.activeInHierarchy);
 		}

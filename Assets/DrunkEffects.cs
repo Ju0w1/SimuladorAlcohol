@@ -33,6 +33,8 @@ public class DrunkEffects : MonoBehaviour
 
         material_doble_vision.SetFloat(Shader.PropertyToID("_IntencidadVisionDoble"), intencidad_vision_doble);
         material_blur.SetFloat(Shader.PropertyToID("_IntencidadBlur"), intencidad_blur);
+
+        PlayerPrefs.SetFloat("ebriedad", alcolemia);
     }
 
     private RenderTexture intermedio;
