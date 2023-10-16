@@ -8,6 +8,7 @@ public class DrunkEffects : MonoBehaviour
     private Material material_doble_vision;
     public Shader shader_blur;
     private Material material_blur;
+    public RenderTexture texture;
 
     public float alcolemia = 1;
     private float intencidad_vision_doble = 0.01f;
@@ -45,6 +46,8 @@ public class DrunkEffects : MonoBehaviour
         {
             Graphics.Blit(source, intermedio, material_doble_vision);
             Graphics.Blit(intermedio, destination, material_blur);
+            //Debug.Log(source.width + " " + source.height);
+            //Graphics.Blit(source, destination, material_blur);
         }
         else
             Graphics.Blit(source, destination);
