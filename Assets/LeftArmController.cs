@@ -27,7 +27,6 @@ public class LeftArmController : MonoBehaviour
     void CopiarRotaciones(GameObject src, GameObject dst, int level = 0)
     {
         src.transform.localRotation = dst.transform.localRotation;
-        Debug.Log(src.name + " " + dst.name + " " + level);
         foreach (Transform src_child in src.transform)
         {
             foreach (Transform dst_child in dst.transform)
