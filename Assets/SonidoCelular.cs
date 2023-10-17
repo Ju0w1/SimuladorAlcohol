@@ -24,9 +24,9 @@ public class SonidoCelular : MonoBehaviour
 		{
 			randomNumber = Random.Range(0, 100);
 			GetComponent<AudioSource>().PlayOneShot(tonos[posiSonido]);
-			Debug.Log("Nueva notificacion");
+			// Debug.Log("Nueva notificacion");
 			posiSonido = Random.Range(0, tonos.Length);
-			Debug.Log(randomNumber);
+			// Debug.Log(randomNumber);
 			yield return new WaitForSeconds(randomNumber);
 		}
 	}

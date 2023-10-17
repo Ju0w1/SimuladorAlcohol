@@ -715,6 +715,12 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   ragdoll_me: {fileID: 1352757569865699466, guid: fa313087b622d584ab8e9337d0420590, type: 3}
+  block_of_collision_prefab: {fileID: 948405535657107566, guid: 818cd52ecc1910d4d82df3b9d8df88f3, type: 3}
+  vel: 0
+  acera_y: 0.14
+  peaton_system: {fileID: 0}
+  peaton_cycle: 0
+  peaton_cycle_point: 0
 --- !u!1 &6784257456277077339
 GameObject:
   m_ObjectHideFlags: 0

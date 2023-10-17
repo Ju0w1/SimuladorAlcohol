@@ -13,12 +13,12 @@ public class Celular : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        void OnCollisionEnter(Collision collision)
-        {
-            if (collision.gameObject.tag == "Torpedo")
-            {
+        // void OnCollisionEnter(Collision collision)
+        // {
+        //     if (collision.gameObject.tag == "Torpedo")
+        //     {
                 
-            }
-        }
+        //     }
+        // }
     }
 }

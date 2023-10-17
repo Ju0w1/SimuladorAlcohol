@@ -46,7 +46,7 @@ public class LogitechSteeringWheel : MonoBehaviour
         //Debug.Log("SteeringInit:" + LogitechGSDK.LogiSteeringInitialize(false));
 
         ebrio = PlayerPrefs.GetFloat("ebriedad");
-        Debug.Log(ebrio);
+        // Debug.Log(ebrio);
     }
 
     //void OnApplicationQuit()
@@ -64,12 +64,12 @@ public class LogitechSteeringWheel : MonoBehaviour
     //    GUI.Label(new Rect(10, 400, 800, 400), forcesLabel);
     //}
 
-    float max = 0;
+    // float max = 0;
     // Update is called once per frame
     void Update()
     {
         drunk_effects.alcolemia = PlayerPrefs.GetFloat("ebriedad");
-        Debug.Log(PlayerPrefs.GetFloat("ebriedad"));
+        // Debug.Log(PlayerPrefs.GetFloat("ebriedad"));
 
         //All the test functions are called on the first device plugged in(index = 0)
         // if (LogitechGSDK.LogiUpdate() && LogitechGSDK.LogiIsConnected(0))
