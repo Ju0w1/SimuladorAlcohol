@@ -9,14 +9,16 @@ public class MenuOpciones : MonoBehaviour
     public AudioMixer audioMixer;
     public Slider sliderEbriedad;
     public float ebriedad;
+    public Slider sliderVolumen;
+    public float volumen;
 
     public GameObject menu;
     public int isMenuActive;
 
-    public void ConfigurarVolumen(float volumen)
-    {
-        audioMixer.SetFloat("volumen", volumen);
-    }
+    // public void ConfigurarVolumen(float volumen)
+    // {
+    //     audioMixer.SetFloat("volumen", volumen);
+    // }
 
     private void Start()
     {
@@ -27,8 +29,13 @@ public class MenuOpciones : MonoBehaviour
 
     private void Update()
     {
+        // audioMixer.volumen = audioMixer.value;
         ebriedad = sliderEbriedad.value;
+        // volumen = sliderEbriedad.value;
         PlayerPrefs.SetFloat("ebriedad", ebriedad);
+
+        volumen = sliderVolumen.value;
+        audioMixer.SetFloat("volumen", volumen);
 
         isMenuActive = PlayerPrefs.GetInt("isMenuActive");
     }
