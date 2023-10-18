@@ -106,7 +106,7 @@ public class CarController : MonoBehaviour {
 		rpm_motor_registrados.Enqueue(last_rpm_motor_registrado);
 		if (rpm_motor_registrados.Count > 2)
 			rpm_motor_registrados.Dequeue();
-		last_rpm_motor_difference = Mathf.Abs(last_rpm_motor_registrado - rpm_motor_registrados.Peek());
+		last_rpm_motor_difference = rpm_motor_registrados.Peek() - last_rpm_motor_registrado;
 		aguja_rpm_controller.SetValue(last_rpm_motor_registrado / motor.max_rpm);
 		aguja_rpm_interno_controller.SetValue(motor.rpm / motor.max_rpm);
 		aguja_velocidad_controller.SetValue(RB.velocity.magnitude * 3.6f / 120);
@@ -153,19 +153,24 @@ public class CarController : MonoBehaviour {
 
 			// fuerza del movimiento del volante para centrarlo
 			//Spring Force -> S
+			// Debug.Log(RB.velocity.magnitude);
 			if (CentrarVolante)
 			{
-				if (LogitechGSDK.LogiIsPlaying(0, LogitechGSDK.LOGI_FORCE_SPRING))
-				{
+				if(RB.velocity.magnitude > 1){
+					if (LogitechGSDK.LogiIsPlaying(0, LogitechGSDK.LOGI_FORCE_SPRING))
+					{
+						// LogitechGSDK.LogiStopSpringForce(0);
+						//activeForceAndEffect[0] = "";
+					}
+					else
+					{
+						LogitechGSDK.LogiPlaySpringForce(0, 0, 30, 50);
+						//activeForceAndEffect[0] = "Spring Force\n ";
+					}
+				} else {
 					LogitechGSDK.LogiStopSpringForce(0);
-					//activeForceAndEffect[0] = "";
 				}
-				else
-				{
-					LogitechGSDK.LogiPlaySpringForce(0, 0, 30, 50);
-					//activeForceAndEffect[0] = "Spring Force\n ";
-				}
-				CentrarVolante = !CentrarVolante;
+				// CentrarVolante = !CentrarVolante;
 			}
 
 			// Tecla de prender el motor

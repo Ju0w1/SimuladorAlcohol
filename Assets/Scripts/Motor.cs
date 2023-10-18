@@ -15,7 +15,23 @@ public class Motor
     public float max_tot_rpm; // maximos rpm, pero de verdad, si se pasa se apaga
 
     public float rpm = 0; // rpm actual
-    public int cambio = 0; // -1 es reversa y 0 es neutro
+    private int _cambio = 0;
+    public int cambio // -1 es reversa y 0 es neutro
+    {
+        get { return _cambio; }
+        set {
+            if (_cambio != value)
+            {
+                _cambio = value;
+                if (embrague < 0.5f)
+                {
+                    rpm = 0;
+                    Debug.Log("aca se supone se deberia poner un sonido porque hiciste un cambio sin poner embrague");
+                }
+            }
+        }
+    }
+
     public float aceleracion = 0;
     public float embrague = 0;
     public float freno = 0;
@@ -29,7 +45,7 @@ public class Motor
         this.fuerza_base = fuerza_base;
 
         // debug
-        rpm = min_rpm;
+        rpm = 0;
     }
 
     internal float obtenerTorque(float rpm, float radius)
@@ -87,7 +103,7 @@ public class Motor
                 rpm = 0;
             // esto permite apagar el motor si el cambio de cambios fue muy mal hecho
             if (jump_size > 500)
-                rpm = 0;
+               rpm = 0;
         }
     }
 
@@ -118,18 +134,24 @@ public class Motor
         return calculo_primario * (rpm_objetivo > wheel_rpm ? 1 : -1);
     }
 
+    private bool is_gas_on = false;
     public bool encendido()
     {
         // esta variable sirve para que el no acelerar apague el motor en segunda marcha
         float factor_por_cambio = Mathf.Abs(cambio) * 3.2f * efecto_embrague();
-        bool valor = rpm >= min_tot_rpm * factor_por_cambio && rpm <= max_tot_rpm;
+        bool valor = rpm >= min_tot_rpm * factor_por_cambio; /* && rpm <= max_tot_rpm;*/
+        // Debug.Log("He " + rpm);
         if (!valor)
+        {
             rpm = 0;
-        return valor;
+            is_gas_on = false;
+        }
+        return valor && is_gas_on;
     }
 
     public void encender()
     {
         rpm = min_rpm;
+        is_gas_on = true;
     }
 }
