@@ -10,6 +10,7 @@ TagManager:
   - IaCar
   - Colisionable
   - Torpedo
+  - Peaton
   layers:
   - Default
   - TransparentFX
@@ -18,9 +19,9 @@ TagManager:
   - Water
   - UI
   - GravedadCelular
-  - 
-  - 
-  - 
+  - TrafficLightsStopLayer
+  - BlockOfCollisionLayer
+  - RoadObjectsLayer
   - 
   - 
   - 

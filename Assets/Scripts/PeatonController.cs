@@ -6,6 +6,7 @@ public class PeatonController : MonoBehaviour
 {
     public GameObject ragdoll_me;
     public GameObject block_of_collision_prefab;
+    public GameObject block_of_collision_2_prefab;
     public float vel;
     private Rigidbody body;
     private Animator animator;
@@ -21,6 +22,15 @@ public class PeatonController : MonoBehaviour
     {
         body = GetComponent<Rigidbody>();
         animator = GetComponent<Animator>();
+        int PeatonLayer = LayerMask.NameToLayer("PeatonLayer");
+        int IgnoreRaycastLayer = LayerMask.NameToLayer("Ignore Raycast");
+        int RoadObjectsLayer = LayerMask.NameToLayer("RoadObjectsLayer");
+        Physics.IgnoreLayerCollision(PeatonLayer, PeatonLayer);
+        Physics.IgnoreLayerCollision(PeatonLayer, IgnoreRaycastLayer);
+        Physics.IgnoreLayerCollision(PeatonLayer, RoadObjectsLayer);
+
+        // going_forward
+        going_forward = Random.Range(0.0f, 1.0f) > 0.5f;
     }
 
     private bool jumping = false;
@@ -29,21 +39,49 @@ public class PeatonController : MonoBehaviour
     private GameObject block_of_collision;
     private BlockOfCollisionController block_of_collision_controller;
 
+    // private Vector3 concealed_forward = Vector3.forward;
+    private bool going_forward;
+
     // Update is called once per frame
     void FixedUpdate()
     {
         // Moviendose para adelante
         body.velocity = transform.forward * vel;
 
+        // Cambiando direccion de adelante
+        // transform.forward = Vector3.Slerp(transform.forward, concealed_forward, 0.1f * Time.deltaTime);
+
+        // Girando para evitar obstaculos
+        // RaycastHit hit;
+        // var dir_right = transform.forward * 3 - transform.right * 0.1f;
+        // var dir_left = transform.forward * 3 + transform.right * 0.1f;
+        // var origin_right = transform.position + transform.right * 0.1f + dir_right.normalized * 0.88f;
+        // var origin_left = transform.position - transform.right * 0.1f + dir_left.normalized * 0.88f;
+        // Debug.DrawRay(origin_right, dir_left, Color.magenta);
+        // Debug.DrawRay(origin_left, dir_right, Color.magenta);
+        // if (Physics.Raycast(origin_right, dir_right.normalized, out hit, 3))
+        //     transform.Rotate(new Vector3(0, -10, 0), Space.Self);
+        // if (Physics.Raycast(origin_left, dir_left.normalized, out hit, 3))
+        //     transform.Rotate(new Vector3(0, 10, 0), Space.Self);
+
         // Cambiando direccion si es necesario
         if (waiting)
         {
+            Debug.DrawRay(transform.position, transform.forward * 20, Color.magenta);
+            RaycastHit hit;
+            bool hitted_car = Physics.Raycast(transform.position, transform.forward, out hit, 20);
+            if (hitted_car)
+                hitted_car = hit.transform.gameObject.tag == "IaCar";
+
             body.velocity = Vector3.zero;
-            if (!block_of_collision_controller.IsCollidingWithCar())
+            if (block_of_collision_controller.IsCollidingWithStop() && !hitted_car)
             {
-                block_of_collision_controller.SetTimer(5.0f);
+                block_of_collision_controller.SetTimer(0.0f);
+                animator.SetBool("Idling", false);
                 waiting = false;
                 jumping = true;
+                var new_block = Instantiate(block_of_collision_2_prefab, transform);
+                new_block.transform.Rotate(new Vector3(0, -90, 0), Space.Self);
             }
         }
         else if (jumping)
@@ -55,7 +93,8 @@ public class PeatonController : MonoBehaviour
             {
                 peaton_cycle = jump_destination.Item1;
                 peaton_cycle_point = jump_destination.Item2;
-                transform.forward = (peaton_system.NextCycle(peaton_cycle, peaton_cycle_point) - peaton_system.CurrentCycle(peaton_cycle, peaton_cycle_point)).normalized;
+                transform.forward = (peaton_system.NextCycle(peaton_cycle, peaton_cycle_point, going_forward) - peaton_system.CurrentCycle(peaton_cycle, peaton_cycle_point)).normalized;
+                // transform.forward = concealed_forward;
                 jumping = false;
                 // body.velocity = Vector3.zero;
             }
@@ -63,18 +102,19 @@ public class PeatonController : MonoBehaviour
         else
         {
             Vector3 curr_cycle = peaton_system.CurrentCycle(peaton_cycle, peaton_cycle_point);
-            Vector3 next_cycle = peaton_system.NextCycle(peaton_cycle, peaton_cycle_point);
+            Vector3 next_cycle = peaton_system.NextCycle(peaton_cycle, peaton_cycle_point, going_forward);
             
             if ((next_cycle - curr_cycle).sqrMagnitude < (transform.position - curr_cycle).sqrMagnitude)
             {
                 if (Random.Range(0.0f, 1.0f) > 0.1f)
                 {
-                    jump_destination = peaton_system.DestinoJump(peaton_cycle, peaton_system.NextPointIndex(peaton_cycle, peaton_cycle_point));
+                    jump_destination = peaton_system.DestinoJump(peaton_cycle, peaton_system.NextPointIndex(peaton_cycle, peaton_cycle_point, going_forward));
                     if (jump_destination.Item1 != -1)
                     {
                         waiting = true;
-                        peaton_system.UpdatePeatonCycle(this);
+                        peaton_system.UpdatePeatonCycle(this, going_forward);
                         transform.forward = (peaton_system.CurrentCycle(jump_destination.Item1, jump_destination.Item2) - peaton_system.CurrentCycle(peaton_cycle, peaton_cycle_point)).normalized;
+                        // transform.forward = concealed_forward;
                         animator.SetBool("Idling", true);
                         block_of_collision = Instantiate(block_of_collision_prefab, transform.position, transform.rotation);
                         block_of_collision.transform.Rotate(new Vector3(0, -90, 0), Space.Self);
@@ -82,8 +122,9 @@ public class PeatonController : MonoBehaviour
                         return;
                     }
                 }
-                peaton_system.UpdatePeatonCycle(this);
-                transform.forward = (peaton_system.NextCycle(peaton_cycle, peaton_cycle_point) - peaton_system.CurrentCycle(peaton_cycle, peaton_cycle_point)).normalized;
+                peaton_system.UpdatePeatonCycle(this, going_forward);
+                transform.forward = (peaton_system.NextCycle(peaton_cycle, peaton_cycle_point, going_forward) - peaton_system.CurrentCycle(peaton_cycle, peaton_cycle_point)).normalized;
+                // transform.forward = concealed_forward;
             }
         }
     }
@@ -109,5 +150,10 @@ public class PeatonController : MonoBehaviour
                     CopiarRotaciones(src_child.gameObject, dst_child.gameObject, level + 1);
             }
         }
+    }
+
+    public void Destruir(float delay)
+    {
+        Destroy(gameObject, delay);
     }
 }
