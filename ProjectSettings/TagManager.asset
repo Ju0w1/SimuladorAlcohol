@@ -11,6 +11,7 @@ TagManager:
   - Colisionable
   - Torpedo
   - Peaton
+  - MainCar
   layers:
   - Default
   - TransparentFX

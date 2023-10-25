@@ -130,27 +130,18 @@ public class PeatonSystem : MonoBehaviour
                 peaton_controller.vel = 2;
                 peaton_controller.transform.position = new Vector3(cycle[point_index].x, y_spawn_point, cycle[point_index].y);
                 // Debug.Log(cycle_index + " " + point_index);
-                peaton_controller.transform.forward = (NextCycle(cycle_index, point_index, false) - CurrentCycle(cycle_index, point_index)).normalized;
+                peaton_controller.transform.forward = (NextCycle(cycle_index, point_index) - CurrentCycle(cycle_index, point_index)).normalized;
+                peaton_controller.forever_height = 0.1669998f;
             }
         }
     }
 
-    public int NextPointIndex(int cycle_index, int point_index, bool go_forward)
+    public int NextPointIndex(int cycle_index, int point_index)
     {
-        if (go_forward)
-        {
-            if (point_index >= cycles[cycle_index].Count - 1)
-                return 0;
-            else
-                return point_index + 1;
-        }
+        if (point_index >= cycles[cycle_index].Count - 1)
+            return 0;
         else
-        {
-            if (point_index <= 0)
-                return cycles[cycle_index].Count - 1;
-            else
-                return point_index - 1;
-        }
+            return point_index + 1;
     }
 
     public (int, int) DestinoJump(int cycle_index, int point_index)
@@ -166,40 +157,20 @@ public class PeatonSystem : MonoBehaviour
         return new Vector3(cycles[cycle_index][point_index].x, y_spawn_point, cycles[cycle_index][point_index].y);
     }
 
-    public Vector3 NextCycle(int cycle_index, int point_index, bool go_forward)
+    public Vector3 NextCycle(int cycle_index, int point_index)
     {
-        if (go_forward)
-        {
-            if (point_index >= cycles[cycle_index].Count - 1)
-                return new Vector3(cycles[cycle_index][0].x, y_spawn_point, cycles[cycle_index][0].y);
-            else
-                return new Vector3(cycles[cycle_index][point_index + 1].x, y_spawn_point, cycles[cycle_index][point_index + 1].y);
-        }
+        if (point_index >= cycles[cycle_index].Count - 1)
+            return new Vector3(cycles[cycle_index][0].x, y_spawn_point, cycles[cycle_index][0].y);
         else
-        {
-            if (point_index <= 0)
-                return new Vector3(cycles[cycle_index][cycles[cycle_index].Count - 1].x, y_spawn_point, cycles[cycle_index][cycles[cycle_index].Count - 1].y);
-            else
-                return new Vector3(cycles[cycle_index][point_index - 1].x, y_spawn_point, cycles[cycle_index][point_index - 1].y);
-        }
+            return new Vector3(cycles[cycle_index][point_index + 1].x, y_spawn_point, cycles[cycle_index][point_index + 1].y);
     }
 
-    public void UpdatePeatonCycle(PeatonController peaton, bool go_forward)
+    public void UpdatePeatonCycle(PeatonController peaton)
     {
-        if (go_forward)
-        {
-            if (peaton.peaton_cycle_point >= cycles[peaton.peaton_cycle].Count - 1)
-                peaton.peaton_cycle_point = 0;
-            else
-                peaton.peaton_cycle_point = peaton.peaton_cycle_point + 1;
-        }
+        if (peaton.peaton_cycle_point >= cycles[peaton.peaton_cycle].Count - 1)
+            peaton.peaton_cycle_point = 0;
         else
-        {
-            if (peaton.peaton_cycle_point <= 0)
-                peaton.peaton_cycle_point = cycles[peaton.peaton_cycle].Count - 1;
-            else
-                peaton.peaton_cycle_point = peaton.peaton_cycle_point - 1;
-        }
+            peaton.peaton_cycle_point = peaton.peaton_cycle_point + 1;
     }
 
 }
