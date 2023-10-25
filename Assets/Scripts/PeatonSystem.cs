@@ -87,7 +87,7 @@ public class PeatonSystem : MonoBehaviour
 
     private const int distancia_a_player_maxima = 100;
     private const int distancia_a_player_minima = 50;
-    private const int peatones_minimos_en_entorno = 30;
+    private const int peatones_minimos_en_entorno = 25;
 
     // Update is called once per frame
     void Update()
@@ -130,21 +130,34 @@ public class PeatonSystem : MonoBehaviour
                 peaton_controller.vel = 2;
                 peaton_controller.transform.position = new Vector3(cycle[point_index].x, y_spawn_point, cycle[point_index].y);
                 // Debug.Log(cycle_index + " " + point_index);
-                peaton_controller.transform.forward = (NextCycle(cycle_index, point_index) - CurrentCycle(cycle_index, point_index)).normalized;
+                peaton_controller.flip_direction = Random.Range(0.0f, 1.0f) > 0.5f;
+                peaton_controller.transform.forward = (NextCycle(peaton_controller, cycle_index, point_index) - CurrentCycle(peaton_controller, cycle_index, point_index)).normalized;
                 peaton_controller.forever_height = 0.1669998f;
             }
         }
     }
 
-    public int NextPointIndex(int cycle_index, int point_index)
+    private int do_variant(PeatonController pec, int point_index, int container_size)
     {
-        if (point_index >= cycles[cycle_index].Count - 1)
-            return 0;
-        else
-            return point_index + 1;
+        if (pec.flip_direction)
+        {
+            if (point_index == 0)
+                return container_size - 1;
+            return point_index - 1;
+        }
+        return (point_index + 1) % container_size;
     }
 
-    public (int, int) DestinoJump(int cycle_index, int point_index)
+    public int NextPointIndex(PeatonController pec, int cycle_index, int point_index)
+    {
+        // if (point_index >= cycles[cycle_index].Count - 1)
+        //     return 0;
+        // else
+        //     return point_index + 1;
+        return do_variant(pec, point_index, cycles[cycle_index].Count);
+    }
+
+    public (int, int) DestinoJump(PeatonController pec, int cycle_index, int point_index)
     {
         // Debug.Log(cycle_index + " " + point_index);
         if (jumps.ContainsKey((cycle_index, point_index)))
@@ -152,25 +165,29 @@ public class PeatonSystem : MonoBehaviour
         return (-1, -1);
     }
 
-    public Vector3 CurrentCycle(int cycle_index, int point_index)
+    public Vector3 CurrentCycle(PeatonController pec, int cycle_index, int point_index)
     {
         return new Vector3(cycles[cycle_index][point_index].x, y_spawn_point, cycles[cycle_index][point_index].y);
     }
 
-    public Vector3 NextCycle(int cycle_index, int point_index)
+    public Vector3 NextCycle(PeatonController pec, int cycle_index, int point_index)
     {
-        if (point_index >= cycles[cycle_index].Count - 1)
-            return new Vector3(cycles[cycle_index][0].x, y_spawn_point, cycles[cycle_index][0].y);
-        else
-            return new Vector3(cycles[cycle_index][point_index + 1].x, y_spawn_point, cycles[cycle_index][point_index + 1].y);
+        // if (point_index >= cycles[cycle_index].Count - 1)
+        //     return new Vector3(cycles[cycle_index][0].x, y_spawn_point, cycles[cycle_index][0].y);
+        // else
+        //     return new Vector3(cycles[cycle_index][point_index + 1].x, y_spawn_point, cycles[cycle_index][point_index + 1].y);
+        int v = do_variant(pec, point_index, cycles[cycle_index].Count);
+        // Debug.Log("miooooo " + v + " " + point_index + " " + v % cycles[cycle_index].Count);
+        return new Vector3(cycles[cycle_index][v].x, y_spawn_point, cycles[cycle_index][v].y);
     }
 
     public void UpdatePeatonCycle(PeatonController peaton)
     {
-        if (peaton.peaton_cycle_point >= cycles[peaton.peaton_cycle].Count - 1)
-            peaton.peaton_cycle_point = 0;
-        else
-            peaton.peaton_cycle_point = peaton.peaton_cycle_point + 1;
+        // if (peaton.peaton_cycle_point >= cycles[peaton.peaton_cycle].Count - 1)
+        //     peaton.peaton_cycle_point = 0;
+        // else
+        //     peaton.peaton_cycle_point = peaton.peaton_cycle_point + 1
+        peaton.peaton_cycle_point = do_variant(peaton, peaton.peaton_cycle_point, cycles[peaton.peaton_cycle].Count);
     }
 
 }

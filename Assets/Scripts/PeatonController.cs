@@ -28,6 +28,8 @@ public class PeatonController : MonoBehaviour
         Physics.IgnoreLayerCollision(PeatonLayer, PeatonLayer);
         Physics.IgnoreLayerCollision(PeatonLayer, IgnoreRaycastLayer);
         Physics.IgnoreLayerCollision(PeatonLayer, RoadObjectsLayer);
+
+        // flip_direction = Random.Range(0.0f, 1.0f) > 0.5f;
     }
 
     private bool jumping = false;
@@ -39,6 +41,9 @@ public class PeatonController : MonoBehaviour
     public Vector3 ray_offset;
 
     public float forever_height;
+
+    [HideInInspector]
+    public bool flip_direction;
 
     void Update()
     {
@@ -100,14 +105,14 @@ public class PeatonController : MonoBehaviour
         }
         else if (jumping)
         {
-            Vector3 curr_cycle = peaton_system.CurrentCycle(peaton_cycle, peaton_cycle_point);
-            Vector3 next_cycle = peaton_system.CurrentCycle(jump_destination.Item1, jump_destination.Item2);
+            Vector3 curr_cycle = peaton_system.CurrentCycle(this, peaton_cycle, peaton_cycle_point);
+            Vector3 next_cycle = peaton_system.CurrentCycle(this, jump_destination.Item1, jump_destination.Item2);
             
             if ((next_cycle - curr_cycle).sqrMagnitude < (transform.position - curr_cycle).sqrMagnitude)
             {
                 peaton_cycle = jump_destination.Item1;
                 peaton_cycle_point = jump_destination.Item2;
-                transform.forward = (peaton_system.NextCycle(peaton_cycle, peaton_cycle_point) - peaton_system.CurrentCycle(peaton_cycle, peaton_cycle_point)).normalized;
+                transform.forward = (peaton_system.NextCycle(this, peaton_cycle, peaton_cycle_point) - peaton_system.CurrentCycle(this, peaton_cycle, peaton_cycle_point)).normalized;
                 // transform.forward = concealed_forward;
                 jumping = false;
                 // body.velocity = Vector3.zero;
@@ -115,19 +120,21 @@ public class PeatonController : MonoBehaviour
         }
         else
         {
-            Vector3 curr_cycle = peaton_system.CurrentCycle(peaton_cycle, peaton_cycle_point);
-            Vector3 next_cycle = peaton_system.NextCycle(peaton_cycle, peaton_cycle_point);
+            Vector3 curr_cycle = peaton_system.CurrentCycle(this, peaton_cycle, peaton_cycle_point);
+            Vector3 next_cycle = peaton_system.NextCycle(this, peaton_cycle, peaton_cycle_point);
+            Debug.DrawRay(curr_cycle, Vector3.up * 3, Color.red);
+            Debug.DrawRay(next_cycle, Vector3.up * 3, Color.yellow);
             
             if ((next_cycle - curr_cycle).sqrMagnitude < (transform.position - curr_cycle).sqrMagnitude)
             {
                 if (Random.Range(0.0f, 1.0f) > 0.1f)
                 {
-                    jump_destination = peaton_system.DestinoJump(peaton_cycle, peaton_system.NextPointIndex(peaton_cycle, peaton_cycle_point));
+                    jump_destination = peaton_system.DestinoJump(this, peaton_cycle, peaton_system.NextPointIndex(this, peaton_cycle, peaton_cycle_point));
                     if (jump_destination.Item1 != -1)
                     {
                         waiting = true;
                         peaton_system.UpdatePeatonCycle(this);
-                        transform.forward = (peaton_system.CurrentCycle(jump_destination.Item1, jump_destination.Item2) - peaton_system.CurrentCycle(peaton_cycle, peaton_cycle_point)).normalized;
+                        transform.forward = (peaton_system.CurrentCycle(this, jump_destination.Item1, jump_destination.Item2) - peaton_system.CurrentCycle(this, peaton_cycle, peaton_cycle_point)).normalized;
                         // transform.forward = concealed_forward;
                         animator.SetBool("Idling", true);
                         block_of_collision = Instantiate(block_of_collision_prefab, transform.position, transform.rotation);
@@ -137,7 +144,7 @@ public class PeatonController : MonoBehaviour
                     }
                 }
                 peaton_system.UpdatePeatonCycle(this);
-                transform.forward = (peaton_system.NextCycle(peaton_cycle, peaton_cycle_point) - peaton_system.CurrentCycle(peaton_cycle, peaton_cycle_point)).normalized;
+                transform.forward = (peaton_system.NextCycle(this, peaton_cycle, peaton_cycle_point) - peaton_system.CurrentCycle(this, peaton_cycle, peaton_cycle_point)).normalized;
                 // transform.forward = concealed_forward;
             }
         }
